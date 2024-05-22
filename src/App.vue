@@ -1,7 +1,8 @@
 <template>
   <div>
-    <InputText type="file" @change="handleFileUpload" accept=".xlsx, .xls" />
-    <div>
+    <TabView>
+    <TabPanel header="Header I">
+      <div>
       <div class="row">
         <label>Employee Number</label>
         <InputText type="text" v-model="employeeNo" />
@@ -29,6 +30,15 @@
       <Calendar id="calendar-24h" v-model="endDate" showTime hourFormat="24" />
     </div>
     <Button @click="exportToExcel">Export to Excel</Button>
+    </TabPanel>
+    <TabPanel header="Header II">
+        <p class="m-0">
+          Hello
+        </p>
+    </TabPanel>
+    </TabView>
+    <!-- <InputText type="file" @change="handleFileUpload" accept=".xlsx, .xls" /> -->
+    
   <!-- Your template code here -->
   </div>
   </template>
@@ -69,10 +79,10 @@
         endDate: null,
         sessionCode:'',
         classCode:'',
-        timeZone:'',
         completionStatus:'1',
         tmuStatus:'4',
         isIndia:false,
+        
 
         // Your reactive data properties here
       };
@@ -123,7 +133,9 @@
                     }
     },
     computed: {
-      // Your computed properties here
+      timeZone(){
+        return this.isIndia ? 'Asia/Calcutta':'America/Mexico City'
+      }
     },
     // Other options like 'created', 'mounted', etc. can be defined here
   };

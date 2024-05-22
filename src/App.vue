@@ -79,8 +79,8 @@
         endDate: null,
         sessionCode:'',
         classCode:'',
-        completionStatus:'1',
-        tmuStatus:'4',
+        completionStatus:1,
+        tmuStatus:4,
         isIndia:false,
         
 
@@ -113,7 +113,7 @@
       async exportToExcel() {       // Sample data       
         const headerValues = ['Name', 'Age', 'Country'];       
         const rowData = [
-        {'Employee Number':this.employeeno,'ActivityCode':this.sessionCode,'Class Start Date':this.startDate,'Registration Date':this.startDate,'Completion Date':this.endDate,'First Launch Date':'','Score':'','Passed':'','Cancellation Date':'','Payment Term':'','Cost':'','Currency':'','Timezone':this.timeZone,'Status':this.tmuStatus,'Notes':'','Subscription Source Activity Code':this.classCode,'Subscription Source Activity Start Date':'','Elapsed Time (in seconds)':'','Completion Status':this.completionStatus,'Location_Name':'','Slotstart_Date':'','Slotend_Date':''}]
+        {'Employee Number':this.employeeNo,'ActivityCode':this.sessionCode,'Class Start Date':this.startDate,'Registration Date':this.startDate,'Completion Date':this.endDate,'First Launch Date':'','Score':'','Passed':'','Cancellation Date':'','Payment Term':'','Cost':'','Currency':'','Timezone':this.timeZone,'Status':this.tmuStatus,'Notes':'','Subscription Source Activity Code':this.classCode,'Subscription Source Activity Start Date':'','Elapsed Time (in seconds)':'','Completion Status':this.completionStatus,'Location_Name':'','Slotstart_Date':'','Slotend_Date':''}]
      // Create a new workbook and worksheet      
          const workbook = new ExcelJS.Workbook();       
          const worksheet = workbook.addWorksheet('TMU')       // Add header row       

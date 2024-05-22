@@ -15,6 +15,10 @@
         <label>Activity classCode</label>
         <InputText type="text" v-model="classCode" />
       </div>
+      <div class="row">
+        <label>completionStatus</label>
+        <InputText type="number" v-model="completionStatus" />
+      </div>
     </div>
     <div class="row">
       <label>Check the box if it is India Training</label>
@@ -79,7 +83,7 @@
         endDate: null,
         sessionCode:'',
         classCode:'',
-        completionStatus:1,
+        completionStatus:null,
         tmuStatus:4,
         isIndia:false,
         
@@ -117,10 +121,19 @@
      // Create a new workbook and worksheet      
          const workbook = new ExcelJS.Workbook();       
          const worksheet = workbook.addWorksheet('TMU')       // Add header row       
-         worksheet.addRow(this.headerColumn);       // Add data rows     
+         worksheet.addRow(this.headerColumn);       // Add data rows    
+         const headerRow = worksheet.getRow(1); 
+         // Assuming header row is the first row
+         // Mapping column headers to their corresponding column indexes
+         const headerMap = {};    
+          headerRow.eachCell((cell, colNumber) => {         
+            headerMap[cell.value] = colNumber;    
+        });
+        
+         console.log("header",headerMap)
            rowData.forEach(row => {       
             console.log("row",row)
-              worksheet.addRow([row['Employee Number'],row.ActivityCode,row['Class Start Date'],row['Registration Date'],row['Completion Date']],row['First Launch Date'],row.Score,row.Passed,row['Cancellation Date'],row['Payment Term'],row.Cost,row.Currency,row.Timezone,row.Status,row.Notes,row['Subscription Source Activity Code'],row['Subscription Source Activity Start Date'],row['Elapsed Time (in seconds)'],row['Completion Status'],row.Location_Name,row.Slotstart_Date,row.Slotend_Date);     
+              worksheet.addRow([row['Employee Number'],row.ActivityCode,row['Class Start Date'],row['Registration Date'],row['Completion Date']]," "," "," "," "," "," "," ",row.Timezone,row.Status," ",row['Subscription Source Activity Code']," "," ",row['Completion Status']," "," "," ");     
            });       // Save the workbook to a blob   
                   const blob = await workbook.xlsx.writeBuffer();     
                     // Create a blob URL     

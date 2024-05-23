@@ -5,6 +5,8 @@
       <div>
       <div class="row">
         <label>Employee Number</label>
+        <Textarea v-model="employeesid" autoResize rows="5" cols="30" />
+
         <InputText type="text" v-model="employeeNo" />
       </div>
       <div class="row">
@@ -33,6 +35,11 @@
       <label>End Date</label>
       <Calendar id="calendar-24h" v-model="endDate" showTime hourFormat="24" />
     </div>
+
+  <DataTable :value="employeeIds" showGridlines tableStyle="min-width: 50rem">
+    <Column field="number" header="Code"></Column>
+  </DataTable>
+
     <Button @click="exportToExcel">Export to Excel</Button>
     </TabPanel>
     <TabPanel header="Header II">
@@ -78,6 +85,7 @@
     "Slotstart_Date",
     "Slotend_Date"
 ],
+employeesid:'',
         employeeNo:'63863',
         startDate: null,
         endDate: null,
@@ -86,7 +94,7 @@
         completionStatus:null,
         tmuStatus:4,
         isIndia:false,
-        
+        employeeIds:[]
 
         // Your reactive data properties here
       };
@@ -94,9 +102,18 @@
     watch:{
       startDate(newValue,oldValue){
         console.log("start",newValue)
-      }
+      },
+      employeesid(newValue,oldValue){
+        this.employeeIds = this.splitEmployeeIds(newValue)
+        console.log("employeesid",this.splitEmployeeIds(newValue))
+      },
     },
     methods: {
+       splitEmployeeIds(employeeids){
+       //   return employeeids.match(/.{1,5}/g); 
+       let chunks = employeeids.match(/.{1,5}/g);
+       return chunks.map((chunk,index)=>({["number"]:chunk}))
+      },
       async handleFileUpload(event) {       
         const file = event.target.files[0];       
         const workbook = new ExcelJS.Workbook();            
@@ -130,12 +147,14 @@
             headerMap[cell.value] = colNumber;    
         });
         
-         console.log("header",headerMap)
-           rowData.forEach(row => {       
-            console.log("row",row)
-              worksheet.addRow([row['Employee Number'],row.ActivityCode,row['Class Start Date'],row['Registration Date'],row['Completion Date']]," "," "," "," "," "," "," ",row.Timezone,row.Status," ",row['Subscription Source Activity Code']," "," ",row['Completion Status']," "," "," ");     
-           });       // Save the workbook to a blob   
-                  const blob = await workbook.xlsx.writeBuffer();     
+  
+          rowData.forEach(row => {       
+           console.log("row",row,row.Timezone)
+               worksheet.addRow([row['Employee Number'],row.ActivityCode,row['Class Start Date'],row['Registration Date'],row['Completion Date']," "," "," "," "," "," "," ",row.Timezone,row.Status," ",row['Subscription Source Activity Code']," "," ",row['Completion Status']," "," "," "]);     
+          });
+                  // Save the workbook to a blob   
+                
+           const blob = await workbook.xlsx.writeBuffer();     
                     // Create a blob URL     
                       const blobUrl = window.URL.createObjectURL(new Blob([blob], { type: 'application/octet-stream' }));       // Create a download link      
                       const downloadLink = document.createElement('a');       

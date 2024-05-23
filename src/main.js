@@ -10,7 +10,9 @@ import Button from 'primevue/button';
 import Calendar from 'primevue/calendar';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
-
+import Textarea from 'primevue/textarea';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
 
 createApp(App)
 .use(PrimeVue)
@@ -20,4 +22,8 @@ createApp(App)
 .component('Calendar',Calendar)
 .component('TabView',TabView)
 .component('TabPanel',TabPanel)
+.component('Textarea',Textarea)
+.component('DataTable',DataTable)
+.component('Column',Column)
 .mount('#app')
+

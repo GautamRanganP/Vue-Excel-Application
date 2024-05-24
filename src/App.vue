@@ -10,11 +10,11 @@
             <label>Employee Number</label>
             <div style="display: flex;flex-direction: column;padding-right: 10px;">
               <label>Attended</label>
-              <Textarea v-model="employeesid" autoResize rows="5" cols="15" />
+              <Textarea v-model="attended" autoResize rows="5" cols="15" />
             </div>
             <div style="display: flex;flex-direction: column;">
               <label>Not Attended</label>
-              <Textarea v-model="employeesid" autoResize rows="5" cols="15" />
+              <Textarea v-model="notAttended" autoResize rows="5" cols="15" />
             </div>
             <!-- <InputText type="text" v-model="employeeNo" /> -->
       </div>
@@ -63,12 +63,13 @@
     </TabView>
 </div>
 <div class="display-data">
-     <DataTable :value="employeeIds" showGridlines>
+     <DataTable :value="employeeIdsOfAttended" showGridlines>
     <Column field="number" header="Attended"></Column>
   </DataTable>
 </div>
 <div class="display-data">
-     <DataTable :value="employeeIds" showGridlines>
+  
+     <DataTable :value="employeeIdsOfNotAttended" showGridlines>
       <Column field="number" header="Not Attended"></Column>
      </DataTable>
 </div>
@@ -110,7 +111,6 @@
     "Slotstart_Date",
     "Slotend_Date"
 ],
-employeesid:'',
         employeeNo:'63863',
         startDate: null,
         endDate: null,
@@ -120,7 +120,10 @@ employeesid:'',
         tmuStatus:4,
         isIndia:false,
         region:null,
-        employeeIds:[]
+        attended:'',
+        notAttended:'',
+        employeeIdsOfAttended:[],
+        employeeIdsOfNotAttended:[]
 
         // Your reactive data properties here
       };
@@ -129,9 +132,13 @@ employeesid:'',
       startDate(newValue,oldValue){
         console.log("start",newValue)
       },
-      employeesid(newValue,oldValue){
-        this.employeeIds = this.splitEmployeeIds(newValue)
-        console.log("employeesid",this.splitEmployeeIds(newValue))
+      attended(newValue,oldValue){
+        this.employeeIdsOfAttended = this.splitEmployeeIds(newValue)
+        console.log("attended",this.splitEmployeeIds(newValue))
+      },
+      notAttended(newValue,oldValue){
+        this.employeeIdsOfNotAttended = this.splitEmployeeIds(newValue)
+        console.log("notAttended",this.splitEmployeeIds(newValue))
       },
     },
     methods: {
@@ -160,8 +167,26 @@ employeesid:'',
       async exportToExcel() {       // Sample data       
         const headerValues = ['Name', 'Age', 'Country'];       
         const rowData = [
-        {'Employee Number':this.employeeNo,'ActivityCode':this.sessionCode,'Class Start Date':this.startDate,'Registration Date':this.startDate,'Completion Date':this.endDate,'First Launch Date':'','Score':'','Passed':'','Cancellation Date':'','Payment Term':'','Cost':'','Currency':'','Timezone':this.timeZone,'Status':this.tmuStatus,'Notes':'','Subscription Source Activity Code':this.classCode,'Subscription Source Activity Start Date':'','Elapsed Time (in seconds)':'','Completion Status':this.completionStatus,'Location_Name':'','Slotstart_Date':'','Slotend_Date':''}]
-     // Create a new workbook and worksheet      
+        {'Employee Number':'','ActivityCode':this.sessionCode,'Class Start Date':this.startDate,'Registration Date':this.startDate,'Completion Date':this.endDate,'First Launch Date':'','Score':'','Passed':'','Cancellation Date':'','Payment Term':'','Cost':'','Currency':'','Timezone':this.timeZone,'Status':this.tmuStatus,'Notes':'','Subscription Source Activity Code':this.classCode,'Subscription Source Activity Start Date':'','Elapsed Time (in seconds)':'','Completion Status':this.completionStatus,'Location_Name':'','Slotstart_Date':'','Slotend_Date':''}]
+        const attendedData = []
+        if(this.employeeIdsOfAttended && this.employeeIdsOfAttended.length > 0){
+          this.employeeIdsOfAttended.forEach((employeeId)=>{
+            const clonedEmployeeRowData = JSON.parse(JSON.stringify(rowData[0]))
+            clonedEmployeeRowData['Employee Number'] = employeeId.number
+            attendedData.push(clonedEmployeeRowData)
+          })
+        }
+        const notAttendedData = []
+        if(this.employeeIdsOfNotAttended && this.employeeIdsOfNotAttended.length > 0){
+          this.employeeIdsOfNotAttended.forEach((employeeId)=>{
+            const clonedEmployeeRowData = JSON.parse(JSON.stringify(rowData[0]))
+            clonedEmployeeRowData['Employee Number'] = employeeId.number
+            notAttendedData.push(clonedEmployeeRowData)
+          })
+        }
+     
+        console.log('entire data',attendedData)
+        // Create a new workbook and worksheet      
          const workbook = new ExcelJS.Workbook();       
          const worksheet = workbook.addWorksheet('TMU')       // Add header row       
          worksheet.addRow(this.headerColumn);       // Add data rows    
@@ -174,10 +199,12 @@ employeesid:'',
         });
         
   
-          rowData.forEach(row => {       
-           console.log("row",row,row.Timezone)
-               worksheet.addRow([row['Employee Number'],row.ActivityCode,row['Class Start Date'],row['Registration Date'],row['Completion Date']," "," "," "," "," "," "," ",row.Timezone,row.Status," ",row['Subscription Source Activity Code']," "," ",row['Completion Status']," "," "," "]);     
-          });
+        attendedData.forEach(row => {       
+            worksheet.addRow([row['Employee Number'],row.ActivityCode,row['Class Start Date'],row['Registration Date'],row['Completion Date']," "," "," "," "," "," "," ",row.Timezone,row.Status," ",row['Subscription Source Activity Code']," "," ",row['Completion Status']," "," "," "]);     
+        });
+        notAttendedData.forEach(row => {       
+            worksheet.addRow([row['Employee Number'],row.ActivityCode,row['Class Start Date'],row['Registration Date']," "," "," "," "," "," "," "," ",row.Timezone," "," ",row['Subscription Source Activity Code']," "," "," "," "," "," "]);     
+        });
                   // Save the workbook to a blob   
                 
            const blob = await workbook.xlsx.writeBuffer();     

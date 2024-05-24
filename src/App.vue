@@ -32,8 +32,17 @@
       </div>
     </div>
     <div class="row">
-      <label>Check the box if it is India Training</label>
-      <Checkbox v-model="isIndia" :binary="true" />
+      <label>India Or Americas</label>
+      <div style="display: flex;align-items: center;gap: 5px;">
+        <RadioButton v-model="region" inputId="ingredient1" name="pizza" value="Cheese" />
+        <label for="ingredient1" style="margin-right: 10px;">India</label>
+      </div>
+      <div style="display: flex;align-items: center;gap: 5px;">
+        <RadioButton v-model="region" inputId="ingredient2" name="pizza" value="Mushroom" />
+        <label for="ingredient2" class="ml-2">Americas</label>
+      </div>
+      <!-- <label>Check the box if it is India Training</label>
+      <Checkbox v-model="isIndia" :binary="true" /> -->
     </div>
     <div class="row">
       <label>Start Date</label>
@@ -110,6 +119,7 @@ employeesid:'',
         completionStatus:null,
         tmuStatus:4,
         isIndia:false,
+        region:null,
         employeeIds:[]
 
         // Your reactive data properties here
@@ -189,7 +199,7 @@ employeesid:'',
   };
   </script>
   <style>
-  label{
+  .row > label{
     display: inline-block;
     width:180px;
   }

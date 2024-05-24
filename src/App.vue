@@ -1,13 +1,22 @@
 <template>
   <div>
-    <TabView>
-    <TabPanel header="Header I">
-      <div>
-      <div class="row">
-        <label>Employee Number</label>
-        <Textarea v-model="employeesid" autoResize rows="5" cols="30" />
+  <div style="display:flex;gap:20px;"> 
+   <div class="display-data">
 
-        <InputText type="text" v-model="employeeNo" />
+    <TabView>
+      <TabPanel header="Header I">
+        <div>
+          <div class="row">
+            <label>Employee Number</label>
+            <div style="display: flex;flex-direction: column;padding-right: 10px;">
+              <label>Attended</label>
+              <Textarea v-model="employeesid" autoResize rows="5" cols="15" />
+            </div>
+            <div style="display: flex;flex-direction: column;">
+              <label>Not Attended</label>
+              <Textarea v-model="employeesid" autoResize rows="5" cols="15" />
+            </div>
+            <!-- <InputText type="text" v-model="employeeNo" /> -->
       </div>
       <div class="row">
         <label>Activity sessionCode</label>
@@ -35,11 +44,6 @@
       <label>End Date</label>
       <Calendar id="calendar-24h" v-model="endDate" showTime hourFormat="24" />
     </div>
-
-  <DataTable :value="employeeIds" showGridlines tableStyle="min-width: 50rem">
-    <Column field="number" header="Code"></Column>
-  </DataTable>
-
     <Button @click="exportToExcel">Export to Excel</Button>
     </TabPanel>
     <TabPanel header="Header II">
@@ -48,8 +52,20 @@
         </p>
     </TabPanel>
     </TabView>
+</div>
+<div class="display-data">
+     <DataTable :value="employeeIds" showGridlines>
+    <Column field="number" header="Attended"></Column>
+  </DataTable>
+</div>
+<div class="display-data">
+     <DataTable :value="employeeIds" showGridlines>
+      <Column field="number" header="Not Attended"></Column>
+     </DataTable>
+</div>
+
     <!-- <InputText type="file" @change="handleFileUpload" accept=".xlsx, .xls" /> -->
-    
+    </div>
   <!-- Your template code here -->
   </div>
   </template>
@@ -175,10 +191,15 @@ employeesid:'',
   <style>
   label{
     display: inline-block;
-    width:150px;
+    width:180px;
   }
   .row{
     margin:10px 0px;
+    display: flex;
+    align-items: center;
+  }
+  .display-data{
+    width: 50%;
   }
 
 

@@ -139,7 +139,8 @@ export default {
   },
   watch: {
     startDate(newValue, oldValue) {
-      console.log("start", newValue)
+      
+      console.log("start", typeof(newValue))
     },
     attended(newValue, oldValue) {
       this.employeeIdsOfAttended = this.splitEmployeeIds(newValue)
@@ -220,10 +221,11 @@ export default {
       headerRow.eachCell((cell, colNumber) => {
         headerMap[cell.value] = colNumber;
       });
+      worksheet.getCell('B2').value = { sharedFormula: 'A2', result: 10 };
       // const range = worksheet.getRange(`C2:C${attendedData.length + notAttendedData.length}`); // Adjust the range as needed
       // range.numberFormat = [["hh:mm:ss AM/PM"]];
       // worksheet.getColumn(`Class Start Date`).numFmt = [["hh:mm:ss AM/PM"]];
-
+      worksheet.getCell('C2').numberFormat = [["dd/mm/yyyy hh:mm:ss AM/PM"]];
       attendedData.forEach(row => {
         worksheet.addRow([row['Employee Number'], row.ActivityCode, row['Class Start Date'], row['Registration Date'], row['Completion Date'], " ", " ", " ", " ", " ", " ", " ", row.Timezone, row.Status, " ", row['Subscription Source Activity Code'], " ", " ", row['Completion Status'], " ", " ", " "]);
       });

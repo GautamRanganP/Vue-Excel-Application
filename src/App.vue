@@ -234,9 +234,9 @@ export default {
       //   // }
       //   console.log("start",cell)
       // })
-      for(let i = 2;i <= attendedData.length + notAttendedData.length;i++){
-        worksheet.getCell(`C${i}`).numFmt ='m/d/yyyy h:mm';
-      }
+      // for(let i = 2;i <= attendedData.length + notAttendedData.length;i++){
+      //   worksheet.getCell(`C${i}`).numFmt ='m/d/yyyy h:mm';
+      // }
       // worksheet.getCell('C2').numberFormat = [["dd/mm/yyyy hh:mm:ss AM/PM"]];
       attendedData.forEach(row => {
         worksheet.addRow([row['Employee Number'], row.ActivityCode,this.formattedStartDate,this.formattedStartDate,this.formattedEndDate, " ", " ", " ", " ", " ", " ", " ", row.Timezone, row.Status, " ", row['Subscription Source Activity Code'], " ", " ", row['Completion Status'], " ", " ", " "]);
@@ -286,7 +286,7 @@ export default {
         const momentDate = moment(this.endDate.toString());
         momentDate.seconds(0);
         const formattedDate = momentDate.format("M/D/YYYY hh:mm:ss A");
-        return formattedDate;
+        return new Date(formattedDate);
       }
       return null
     }

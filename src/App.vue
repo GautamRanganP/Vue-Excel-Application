@@ -140,11 +140,10 @@ export default {
   },
   watch: {
     startDate(newValue, oldValue) {
-//       const momentDate = moment("Tue May 21 2024 17:18:39 GMT+0530 (India Standard Time)");
-// const formattedDate = momentDate.format("D-MM-YY HH-mm");
-
-// console.log(formattedDate);
-      console.log("start", newValue)
+      // const momentDate = moment(newValue.toString());
+      // momentDate.seconds(0);
+      // const formattedDate = momentDate.format("M/D/YYYY hh:mm:ss A");
+      // console.log("start", )
     },
     attended(newValue, oldValue) {
       this.employeeIdsOfAttended = this.splitEmployeeIds(newValue)
@@ -232,10 +231,10 @@ export default {
 
       // worksheet.getCell('C2').numberFormat = [["dd/mm/yyyy hh:mm:ss AM/PM"]];
       attendedData.forEach(row => {
-        worksheet.addRow([row['Employee Number'], row.ActivityCode, moment(row['Class Start Date']).format("m-d-yyyy hh-mm"), row['Registration Date'], row['Completion Date'], " ", " ", " ", " ", " ", " ", " ", row.Timezone, row.Status, " ", row['Subscription Source Activity Code'], " ", " ", row['Completion Status'], " ", " ", " "]);
+        worksheet.addRow([row['Employee Number'], row.ActivityCode,this.formattedStartDate, row['Registration Date'], row['Completion Date'], " ", " ", " ", " ", " ", " ", " ", row.Timezone, row.Status, " ", row['Subscription Source Activity Code'], " ", " ", row['Completion Status'], " ", " ", " "]);
       });
       notAttendedData.forEach(row => {
-        worksheet.addRow([row['Employee Number'], row.ActivityCode,moment(row['Class Start Date']).format("m-d-yyyy hh-mm"), row['Registration Date'], " ", " ", " ", " ", " ", " ", " ", " ", row.Timezone, " ", " ", row['Subscription Source Activity Code'], " ", " ", " ", " ", " ", " "]);
+        worksheet.addRow([row['Employee Number'], row.ActivityCode,this.formattedStartDate, row['Registration Date'], " ", " ", " ", " ", " ", " ", " ", " ", row.Timezone, " ", " ", row['Subscription Source Activity Code'], " ", " ", " ", " ", " ", " "]);
       });
 
 
@@ -264,6 +263,15 @@ export default {
     },
     activitySessionCode(){
       return `VILT_CMP_${this.selectedMonth}_${this.trainingName}_SN`
+    },
+    formattedStartDate(){
+      if(this.startDate !== null){
+        const momentDate = moment(this.startDate.toString());
+        momentDate.seconds(0);
+        const formattedDate = momentDate.format("M/D/YYYY hh:mm:ss A");4
+        return formattedDate;
+      }
+      return null
     }
   },
   // Other options like 'created', 'mounted', etc. can be defined here

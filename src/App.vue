@@ -227,8 +227,16 @@ export default {
       // worksheet.getCell('B2').value = { sharedFormula: 'A2', result: 10 };
       // const range = worksheet.getRange(`C2:C${attendedData.length + notAttendedData.length}`); // Adjust the range as needed
       // range.numberFormat = [["hh:mm:ss AM/PM"]];
-      // worksheet.getColumn(`Class Start Date`).numFmt = [["hh:mm:ss AM/PM"]];
-
+      // worksheet.getColumn(`Class Start Date`).numFmt = 'm/d/yyyy h:mm'
+      // worksheet.getColumn(`Class Start Date`).eachCell((cell,rowNumber)=>{
+      //   // if(rowNumber!==1){
+      //   //   cell.numFmt ='m/d/yyyy h:mm'
+      //   // }
+      //   console.log("start",cell)
+      // })
+      for(let i = 2;i <= attendedData.length + notAttendedData.length;i++){
+        worksheet.getCell(`C${i}`).numFmt ='m/d/yyyy h:mm';
+      }
       // worksheet.getCell('C2').numberFormat = [["dd/mm/yyyy hh:mm:ss AM/PM"]];
       attendedData.forEach(row => {
         worksheet.addRow([row['Employee Number'], row.ActivityCode,this.formattedStartDate,this.formattedStartDate,this.formattedEndDate, " ", " ", " ", " ", " ", " ", " ", row.Timezone, row.Status, " ", row['Subscription Source Activity Code'], " ", " ", row['Completion Status'], " ", " ", " "]);

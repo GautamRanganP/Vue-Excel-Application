@@ -231,10 +231,10 @@ export default {
 
       // worksheet.getCell('C2').numberFormat = [["dd/mm/yyyy hh:mm:ss AM/PM"]];
       attendedData.forEach(row => {
-        worksheet.addRow([row['Employee Number'], row.ActivityCode,this.formattedStartDate, row['Registration Date'], row['Completion Date'], " ", " ", " ", " ", " ", " ", " ", row.Timezone, row.Status, " ", row['Subscription Source Activity Code'], " ", " ", row['Completion Status'], " ", " ", " "]);
+        worksheet.addRow([row['Employee Number'], row.ActivityCode,this.formattedStartDate,this.formattedStartDate,formattedEndDate, " ", " ", " ", " ", " ", " ", " ", row.Timezone, row.Status, " ", row['Subscription Source Activity Code'], " ", " ", row['Completion Status'], " ", " ", " "]);
       });
       notAttendedData.forEach(row => {
-        worksheet.addRow([row['Employee Number'], row.ActivityCode,this.formattedStartDate, row['Registration Date'], " ", " ", " ", " ", " ", " ", " ", " ", row.Timezone, " ", " ", row['Subscription Source Activity Code'], " ", " ", " ", " ", " ", " "]);
+        worksheet.addRow([row['Employee Number'], row.ActivityCode,this.formattedStartDate,this.formattedStartDate, " ", " ", " ", " ", " ", " ", " ", " ", row.Timezone, " ", " ", row['Subscription Source Activity Code'], " ", " ", " ", " ", " ", " "]);
       });
 
 
@@ -268,7 +268,16 @@ export default {
       if(this.startDate !== null){
         const momentDate = moment(this.startDate.toString());
         momentDate.seconds(0);
-        const formattedDate = momentDate.format("M/D/YYYY hh:mm:ss A");4
+        const formattedDate = momentDate.format("M/D/YYYY hh:mm:ss A");
+        return formattedDate;
+      }
+      return null
+    },
+    formattedEndDate(){
+      if(this.endDate !== null){
+        const momentDate = moment(this.endDate.toString());
+        momentDate.seconds(0);
+        const formattedDate = momentDate.format("M/D/YYYY hh:mm:ss A");
         return formattedDate;
       }
       return null

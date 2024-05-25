@@ -183,8 +183,8 @@ export default {
       this.data = jsonData;
       console.log("data", jsonData)
     },
-    async exportToExcel() {       // Sample data       
-      const headerValues = ['Name', 'Age', 'Country'];
+    async exportToExcel() {    
+
       const rowDataForAttended = [
         { 'Employee Number': '', 'ActivityCode': this.activitySessionCode, 'Class Start Date': this.startDate, 'Registration Date': this.startDate, 'Completion Date': this.endDate, 'First Launch Date': '', 'Score': '', 'Passed': '', 'Cancellation Date': '', 'Payment Term': '', 'Cost': '', 'Currency': '', 'Timezone': this.timeZone, 'Status': 4, 'Notes': '', 'Subscription Source Activity Code': this.activityClassCode, 'Subscription Source Activity Start Date': '', 'Elapsed Time (in seconds)': '', 'Completion Status': 1, 'Location_Name': '', 'Slotstart_Date': '', 'Slotend_Date': '' }]
         const rowDataForNotAttended = [
@@ -231,7 +231,7 @@ export default {
 
       // worksheet.getCell('C2').numberFormat = [["dd/mm/yyyy hh:mm:ss AM/PM"]];
       attendedData.forEach(row => {
-        worksheet.addRow([row['Employee Number'], row.ActivityCode,this.formattedStartDate,this.formattedStartDate,formattedEndDate, " ", " ", " ", " ", " ", " ", " ", row.Timezone, row.Status, " ", row['Subscription Source Activity Code'], " ", " ", row['Completion Status'], " ", " ", " "]);
+        worksheet.addRow([row['Employee Number'], row.ActivityCode,this.formattedStartDate,this.formattedStartDate,this.formattedEndDate, " ", " ", " ", " ", " ", " ", " ", row.Timezone, row.Status, " ", row['Subscription Source Activity Code'], " ", " ", row['Completion Status'], " ", " ", " "]);
       });
       notAttendedData.forEach(row => {
         worksheet.addRow([row['Employee Number'], row.ActivityCode,this.formattedStartDate,this.formattedStartDate, " ", " ", " ", " ", " ", " ", " ", " ", row.Timezone, " ", " ", row['Subscription Source Activity Code'], " ", " ", " ", " ", " ", " "]);

@@ -230,7 +230,7 @@ export default {
       // range.numberFormat = [["hh:mm:ss AM/PM"]];
       // worksheet.getColumn(`Class Start Date`).numFmt = [["hh:mm:ss AM/PM"]];
 
-      worksheet.getCell('C2').numberFormat = [["dd/mm/yyyy hh:mm:ss AM/PM"]];
+      // worksheet.getCell('C2').numberFormat = [["dd/mm/yyyy hh:mm:ss AM/PM"]];
       attendedData.forEach(row => {
         worksheet.addRow([row['Employee Number'], row.ActivityCode, moment(row['Class Start Date']).format("m-d-yyyy hh-mm"), row['Registration Date'], row['Completion Date'], " ", " ", " ", " ", " ", " ", " ", row.Timezone, row.Status, " ", row['Subscription Source Activity Code'], " ", " ", row['Completion Status'], " ", " ", " "]);
       });

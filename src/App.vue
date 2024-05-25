@@ -220,7 +220,9 @@ export default {
       headerRow.eachCell((cell, colNumber) => {
         headerMap[cell.value] = colNumber;
       });
-      worksheet.getColumn(`Class Start Date`).numFmt = [["hh:mm:ss AM/PM"]];
+      // const range = worksheet.getRange(`C2:C${attendedData.length + notAttendedData.length}`); // Adjust the range as needed
+      // range.numberFormat = [["hh:mm:ss AM/PM"]];
+      // worksheet.getColumn(`Class Start Date`).numFmt = [["hh:mm:ss AM/PM"]];
 
       attendedData.forEach(row => {
         worksheet.addRow([row['Employee Number'], row.ActivityCode, row['Class Start Date'], row['Registration Date'], row['Completion Date'], " ", " ", " ", " ", " ", " ", " ", row.Timezone, row.Status, " ", row['Subscription Source Activity Code'], " ", " ", row['Completion Status'], " ", " ", " "]);

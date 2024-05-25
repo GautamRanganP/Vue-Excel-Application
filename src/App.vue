@@ -90,6 +90,7 @@
 <script>
 
 import ExcelJS from 'exceljs'
+import moment from 'moment';
 
 export default {
   data() {
@@ -139,8 +140,11 @@ export default {
   },
   watch: {
     startDate(newValue, oldValue) {
-      
-      console.log("start", typeof(newValue))
+//       const momentDate = moment("Tue May 21 2024 17:18:39 GMT+0530 (India Standard Time)");
+// const formattedDate = momentDate.format("D-MM-YY HH-mm");
+
+// console.log(formattedDate);
+      console.log("start", newValue)
     },
     attended(newValue, oldValue) {
       this.employeeIdsOfAttended = this.splitEmployeeIds(newValue)
@@ -225,12 +229,13 @@ export default {
       // const range = worksheet.getRange(`C2:C${attendedData.length + notAttendedData.length}`); // Adjust the range as needed
       // range.numberFormat = [["hh:mm:ss AM/PM"]];
       // worksheet.getColumn(`Class Start Date`).numFmt = [["hh:mm:ss AM/PM"]];
+
       worksheet.getCell('C2').numberFormat = [["dd/mm/yyyy hh:mm:ss AM/PM"]];
       attendedData.forEach(row => {
-        worksheet.addRow([row['Employee Number'], row.ActivityCode, row['Class Start Date'], row['Registration Date'], row['Completion Date'], " ", " ", " ", " ", " ", " ", " ", row.Timezone, row.Status, " ", row['Subscription Source Activity Code'], " ", " ", row['Completion Status'], " ", " ", " "]);
+        worksheet.addRow([row['Employee Number'], row.ActivityCode, moment(row['Class Start Date']).format("m-d-yyyy hh-mm"), row['Registration Date'], row['Completion Date'], " ", " ", " ", " ", " ", " ", " ", row.Timezone, row.Status, " ", row['Subscription Source Activity Code'], " ", " ", row['Completion Status'], " ", " ", " "]);
       });
       notAttendedData.forEach(row => {
-        worksheet.addRow([row['Employee Number'], row.ActivityCode, row['Class Start Date'], row['Registration Date'], " ", " ", " ", " ", " ", " ", " ", " ", row.Timezone, " ", " ", row['Subscription Source Activity Code'], " ", " ", " ", " ", " ", " "]);
+        worksheet.addRow([row['Employee Number'], row.ActivityCode,moment(row['Class Start Date']).format("m-d-yyyy hh-mm"), row['Registration Date'], " ", " ", " ", " ", " ", " ", " ", " ", row.Timezone, " ", " ", row['Subscription Source Activity Code'], " ", " ", " ", " ", " ", " "]);
       });
 
 

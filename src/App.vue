@@ -206,7 +206,12 @@ export default {
       console.log('entire data', attendedData)
       // Create a new workbook and worksheet      
       const workbook = new ExcelJS.Workbook();
-      const worksheet = workbook.addWorksheet('TMU')       // Add header row       
+      const worksheet = workbook.addWorksheet('TMU')       // Add header row    
+      
+      
+
+
+      
       worksheet.addRow(this.headerColumn);       // Add data rows    
       const headerRow = worksheet.getRow(1);
       // Assuming header row is the first row
@@ -215,7 +220,7 @@ export default {
       headerRow.eachCell((cell, colNumber) => {
         headerMap[cell.value] = colNumber;
       });
-
+      worksheet.getColumn(`Class Start Date`).numFmt = [["hh:mm:ss AM/PM"]];
 
       attendedData.forEach(row => {
         worksheet.addRow([row['Employee Number'], row.ActivityCode, row['Class Start Date'], row['Registration Date'], row['Completion Date'], " ", " ", " ", " ", " ", " ", " ", row.Timezone, row.Status, " ", row['Subscription Source Activity Code'], " ", " ", row['Completion Status'], " ", " ", " "]);
@@ -223,6 +228,12 @@ export default {
       notAttendedData.forEach(row => {
         worksheet.addRow([row['Employee Number'], row.ActivityCode, row['Class Start Date'], row['Registration Date'], " ", " ", " ", " ", " ", " ", " ", " ", row.Timezone, " ", " ", row['Subscription Source Activity Code'], " ", " ", " ", " ", " ", " "]);
       });
+
+
+
+
+
+      
       // Save the workbook to a blob   
 
       const blob = await workbook.xlsx.writeBuffer();

@@ -143,7 +143,11 @@ export default {
       // const momentDate = moment(newValue.toString());
       // momentDate.seconds(0);
       // const formattedDate = momentDate.format("M/D/YYYY hh:mm:ss A");
-      // console.log("start", )
+      const momentDate = moment(newValue.toString());
+        momentDate.seconds(0);
+        const formattedDate = momentDate.format("M/D/YYYY HH:mm");
+        // return formattedDate;
+      console.log("start",formattedDate)
     },
     attended(newValue, oldValue) {
       this.employeeIdsOfAttended = this.splitEmployeeIds(newValue)
@@ -240,13 +244,13 @@ export default {
       // worksheet.getCell('C2').numberFormat = [["dd/mm/yyyy hh:mm:ss AM/PM"]];
       let cellIndex =2;
       attendedData.forEach(row => {
-        worksheet.addRow([row['Employee Number'], row.ActivityCode,this.formattedStartDate,this.formattedStartDate,this.formattedEndDate, " ", " ", " ", " ", " ", " ", " ", row.Timezone, row.Status, " ", row['Subscription Source Activity Code'], " ", " ", row['Completion Status'], " ", " ", " "]);
         worksheet.getCell(`C${cellIndex}`).numFmt ='m/d/yyyy h:mm';
+        worksheet.addRow([row['Employee Number'], row.ActivityCode,this.formattedStartDate,this.formattedStartDate,this.formattedEndDate, " ", " ", " ", " ", " ", " ", " ", row.Timezone, row.Status, " ", row['Subscription Source Activity Code'], " ", " ", row['Completion Status'], " ", " ", " "]);
         cellIndex++
       });
       notAttendedData.forEach(row => {
-        worksheet.addRow([row['Employee Number'], row.ActivityCode,this.formattedStartDate,this.formattedStartDate, " ", " ", " ", " ", " ", " ", " ", " ", row.Timezone, " ", " ", row['Subscription Source Activity Code'], " ", " ", " ", " ", " ", " "]);
         worksheet.getCell(`C${cellIndex}`).numFmt ='m/d/yyyy h:mm';
+        worksheet.addRow([row['Employee Number'], row.ActivityCode,this.formattedStartDate,this.formattedStartDate, " ", " ", " ", " ", " ", " ", " ", " ", row.Timezone, " ", " ", row['Subscription Source Activity Code'], " ", " ", " ", " ", " ", " "]);
         cellIndex++
       });
 
@@ -281,7 +285,7 @@ export default {
       if(this.startDate !== null){
         const momentDate = moment(this.startDate.toString());
         momentDate.seconds(0);
-        const formattedDate = momentDate.format("M/D/YYYY hh:mm:ss A");
+        const formattedDate = momentDate.format("M/D/YYYY HH:mm:ss");
         return formattedDate;
       }
       return null
@@ -290,7 +294,7 @@ export default {
       if(this.endDate !== null){
         const momentDate = moment(this.endDate.toString());
         momentDate.seconds(0);
-        const formattedDate = momentDate.format("M/D/YYYY hh:mm:ss A");
+        const formattedDate = momentDate.format("M/D/YYYY HH:mm");
         return formattedDate;
       }
       return null

@@ -249,13 +249,13 @@ export default {
     worksheet.columns.forEach((column, columnIndex) => {     
       let maxLength = 0;     
       column.eachCell({ includeEmpty: true }, (cell) => {         
-        const columnLength = cell.value ? cell.value.toString().length : 10; 
+        const columnLength = cell.value ? cell.value.toString().length : 20; 
         // Minimum width 10
         if (columnLength > maxLength) {             
           maxLength = columnLength;         
         }     
       });     
-      column.width = maxLength < 10 ? 10 : maxLength; 
+      column.width = maxLength < 20 ? 20 : maxLength; 
     
      //Minimum width 10
     });

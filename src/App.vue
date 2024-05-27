@@ -244,15 +244,26 @@ export default {
       // worksheet.getCell('C2').numberFormat = [["dd/mm/yyyy hh:mm:ss AM/PM"]];
     //  let cellIndex =2;
     worksheet.getColumn(3).numFmt = 'm/d/yyyy h:mm';
+    worksheet.getColumn(4).numFmt = 'm/d/yyyy h:mm';
+    worksheet.getColumn(5).numFmt = 'm/d/yyyy h:mm';
+    worksheet.columns.forEach((column, columnIndex) => {     
+      let maxLength = 0;     
+      column.eachCell({ includeEmpty: true }, (cell) => {         
+        const columnLength = cell.value ? cell.value.toString().length : 10; 
+        // Minimum width 10
+        if (columnLength > maxLength) {             
+          maxLength = columnLength;         
+        }     
+      });     
+      column.width = maxLength < 10 ? 10 : maxLength; 
+    
+     //Minimum width 10
+    });
       attendedData.forEach(row => {
-      //  worksheet.getCell(`C${cellIndex}`).numFmt ='m/d/yyyy h:mm';
         worksheet.addRow([row['Employee Number'], row.ActivityCode,this.formattedStartDate,this.formattedStartDate,this.formattedEndDate, " ", " ", " ", " ", " ", " ", " ", row.Timezone, row.Status, " ", row['Subscription Source Activity Code'], " ", " ", row['Completion Status'], " ", " ", " "]);
-      //  cellIndex++
       });
       notAttendedData.forEach(row => {
-     //   worksheet.getCell(`C${cellIndex}`).numFmt ='m/d/yyyy h:mm';
         worksheet.addRow([row['Employee Number'], row.ActivityCode,this.formattedStartDate,this.formattedStartDate, " ", " ", " ", " ", " ", " ", " ", " ", row.Timezone, " ", " ", row['Subscription Source Activity Code'], " ", " ", " ", " ", " ", " "]);
-      //  cellIndex++
       });
 
 

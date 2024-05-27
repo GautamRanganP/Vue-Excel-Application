@@ -284,10 +284,10 @@ export default {
     formattedStartDate(){
       if(this.startDate !== null){
         const momentDate = moment(this.startDate.toString());
-        momentDate.seconds(0);
+        momentDate.seconds(0);     
         const formattedDate = momentDate.format("M/D/YYYY HH:mm");
-        const dateObject = formattedDate.toDate()
-        return dateObject;
+        const parsedDate = moment.utc(formattedDate).startOf('day').toDate();
+        return parsedDate;
       }
       return null
     },

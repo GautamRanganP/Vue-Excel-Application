@@ -286,7 +286,7 @@ export default {
         const momentDate = moment(this.startDate.toString());
         momentDate.seconds(0);     
         const formattedDate = momentDate.format("M/D/YYYY HH:mm");
-        const parsedDate = moment.utc(formattedDate).startOf('day').toDate();
+        const parsedDate = moment.utc(formattedDate).toDate();
         return parsedDate;
       }
       return null

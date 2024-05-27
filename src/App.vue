@@ -147,7 +147,7 @@ export default {
         momentDate.seconds(0);
         const formattedDate = momentDate.format("M/D/YYYY HH:mm");
         // return formattedDate;
-      console.log("start",formattedDate)
+      console.log("start",typeof(formattedDate))
     },
     attended(newValue, oldValue) {
       this.employeeIdsOfAttended = this.splitEmployeeIds(newValue)
@@ -285,8 +285,9 @@ export default {
       if(this.startDate !== null){
         const momentDate = moment(this.startDate.toString());
         momentDate.seconds(0);
-        const formattedDate = momentDate.format("M/D/YYYY HH:mm:ss");
-        return formattedDate;
+        const formattedDate = momentDate.format("M/D/YYYY HH:mm");
+        const dateObject = formattedDate.toDate()
+        return dateObject;
       }
       return null
     },

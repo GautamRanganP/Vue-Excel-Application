@@ -243,6 +243,7 @@ export default {
       // }
       // worksheet.getCell('C2').numberFormat = [["dd/mm/yyyy hh:mm:ss AM/PM"]];
     //  let cellIndex =2;
+    worksheet.getColumn(3).numFmt = 'm/d/yyyy h:mm';
       attendedData.forEach(row => {
       //  worksheet.getCell(`C${cellIndex}`).numFmt ='m/d/yyyy h:mm';
         worksheet.addRow([row['Employee Number'], row.ActivityCode,this.formattedStartDate,this.formattedStartDate,this.formattedEndDate, " ", " ", " ", " ", " ", " ", " ", row.Timezone, row.Status, " ", row['Subscription Source Activity Code'], " ", " ", row['Completion Status'], " ", " ", " "]);

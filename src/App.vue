@@ -45,7 +45,7 @@
               <label>End Date</label>
               <Calendar id="calendar-24h" v-model="endDate" showTime hourFormat="24" />
             </div>
-            <Button @click="exportToExcel">Export to Excel</Button>
+            <Button @click="exportToExcel">Export TMU</Button>
       </div>
       <div class="input-preview-data">
         <div class="row">
@@ -139,16 +139,6 @@ export default {
     };
   },
   watch: {
-    startDate(newValue, oldValue) {
-      // const momentDate = moment(newValue.toString());
-      // momentDate.seconds(0);
-      // const formattedDate = momentDate.format("M/D/YYYY hh:mm:ss A");
-      const momentDate = moment(newValue.toString());
-        momentDate.seconds(0);
-        const formattedDate = momentDate.format("M/D/YYYY HH:mm");
-        // return formattedDate;
-      console.log("start",typeof(formattedDate))
-    },
     attended(newValue, oldValue) {
       this.employeeIdsOfAttended = this.splitEmployeeIds(newValue)
       console.log("attended", this.splitEmployeeIds(newValue))
@@ -156,17 +146,10 @@ export default {
     notAttended(newValue, oldValue) {
       this.employeeIdsOfNotAttended = this.splitEmployeeIds(newValue)
       console.log("notAttended", this.splitEmployeeIds(newValue))
-    },
-    trainingMonth(newValue, oldValue){
-      console.log("month", newValue)
-    },
-    region(newValue, oldValue){
-      console.log("region", newValue)
     }
   },
   methods: {
     splitEmployeeIds(employeeids) {
-      //   return employeeids.match(/.{1,5}/g); 
       let chunks = employeeids.match(/.{1,5}/g);
       return chunks.map((chunk, index) => ({ ["number"]: chunk }))
     },
@@ -215,38 +198,12 @@ export default {
       // Create a new workbook and worksheet      
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('TMU')       // Add header row    
-      
-      
-
-
-      
       worksheet.addRow(this.headerColumn);       // Add data rows    
       const headerRow = worksheet.getRow(1);
-      // Assuming header row is the first row
-      // Mapping column headers to their corresponding column indexes
-      const headerMap = {};
-      headerRow.eachCell((cell, colNumber) => {
-        headerMap[cell.value] = colNumber;
-      });
-      // worksheet.getCell('B2').value = { sharedFormula: 'A2', result: 10 };
-      // const range = worksheet.getRange(`C2:C${attendedData.length + notAttendedData.length}`); // Adjust the range as needed
-      // range.numberFormat = [["hh:mm:ss AM/PM"]];
-      // worksheet.getColumn(`Class Start Date`).numFmt = 'm/d/yyyy h:mm'
-      // worksheet.getColumn(`Class Start Date`).eachCell((cell,rowNumber)=>{
-      //   // if(rowNumber!==1){
-      //   //   cell.numFmt ='m/d/yyyy h:mm'
-      //   // }
-      //   console.log("start",cell)
-      // })
-      // for(let i = 2;i <= attendedData.length + notAttendedData.length;i++){
-      //   worksheet.getCell(`C${i}`).numFmt ='m/d/yyyy h:mm';
-      // }
-      // worksheet.getCell('C2').numberFormat = [["dd/mm/yyyy hh:mm:ss AM/PM"]];
-    //  let cellIndex =2;
-    worksheet.getColumn(3).numFmt = 'm/d/yyyy h:mm';
-    worksheet.getColumn(4).numFmt = 'm/d/yyyy h:mm';
-    worksheet.getColumn(5).numFmt = 'm/d/yyyy h:mm';
-    worksheet.columns.forEach((column, columnIndex) => {     
+      worksheet.getColumn(3).numFmt = 'm/d/yyyy h:mm';
+      worksheet.getColumn(4).numFmt = 'm/d/yyyy h:mm';
+      worksheet.getColumn(5).numFmt = 'm/d/yyyy h:mm';
+      worksheet.columns.forEach((column, columnIndex) => {     
       let maxLength = 0;     
       column.eachCell({ includeEmpty: true }, (cell) => {         
         const columnLength = cell.value ? cell.value.toString().length : 20; 
@@ -256,9 +213,8 @@ export default {
         }     
       });     
       column.width = maxLength < 20 ? 20 : maxLength; 
-    
-     //Minimum width 10
     });
+
       attendedData.forEach(row => {
         worksheet.addRow([row['Employee Number'], row.ActivityCode,this.formattedStartDate,this.formattedStartDate,this.formattedEndDate, " ", " ", " ", " ", " ", " ", " ", row.Timezone, row.Status, " ", row['Subscription Source Activity Code'], " ", " ", row['Completion Status'], " ", " ", " "]);
       });
@@ -266,13 +222,7 @@ export default {
         worksheet.addRow([row['Employee Number'], row.ActivityCode,this.formattedStartDate,this.formattedStartDate, " ", " ", " ", " ", " ", " ", " ", " ", row.Timezone, " ", " ", row['Subscription Source Activity Code'], " ", " ", " ", " ", " ", " "]);
       });
 
-
-
-
-
-      
       // Save the workbook to a blob   
-
       const blob = await workbook.xlsx.writeBuffer();
       // Create a blob URL     
       const blobUrl = window.URL.createObjectURL(new Blob([blob], { type: 'application/octet-stream' }));       // Create a download link      

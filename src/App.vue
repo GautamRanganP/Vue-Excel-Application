@@ -19,6 +19,10 @@
                 <InputText type="text" v-model="trainingName" />
               </div>
               <div class="row">
+                <label>Class Number</label>
+                <InputText type="number" v-model="classNumber" />
+              </div>
+              <div class="row">
                 <label>Training name</label>
                   <Dropdown v-model="selectedMonth" :options="months" placeholder="Select a Month" class="w-full md:w-14rem" />
               </div>
@@ -54,7 +58,7 @@
                   <InputGroupAddon>VILT_CMP_</InputGroupAddon>
                   <InputText placeholder="Month" v-model="selectedMonth" disabled />
                   <InputText placeholder="Training Name" v-model="trainingName" disabled />
-                  <InputGroupAddon>_SN1</InputGroupAddon>
+                  <InputGroupAddon>_SN{{ classNumber }}</InputGroupAddon>
                 </InputGroup>
                 <!-- <InputText type="text" v-model="sessionCode" /> -->
               </div>
@@ -64,10 +68,10 @@
         <div class="row">
                 <label>Class Code</label>
                 <InputGroup>
-                  <InputGroupAddon>VILT_CMP_</InputGroupAddon>
+                  <InputGroupAddon >VILT_{{region !== 'Americas'?'CMP':'MX'}}_</InputGroupAddon>
                   <InputText placeholder="Month" v-model="selectedMonth" disabled />
                   <InputText placeholder="Training name" v-model="trainingName" disabled />
-                  <InputGroupAddon>_CLS1</InputGroupAddon>
+                  <InputGroupAddon>_CLS{{ classNumber }}</InputGroupAddon>
                 </InputGroup>
                 <!-- <InputText type="text" v-model="classCode" /> -->
               </div>
@@ -128,6 +132,7 @@ export default {
       endDate: null,
       sessionCode: '',
       classCode: '',
+      classNumber: 1,
       isIndia: false,
       region: 'India',
       attended: '',
@@ -238,10 +243,10 @@ export default {
       return this.region !== 'Americas' ? 'Asia/Calcutta' : 'America/Mexico City'
     },
     activityClassCode(){
-      return `VILT_CMP_${this.selectedMonth}_${this.trainingName}_CLS`
+      return `VILT_${this.region !== 'Americas'?'CMP':'MX'}_${this.selectedMonth}_${this.trainingName}_CLS${this.classNumber}`
     },
     activitySessionCode(){
-      return `VILT_CMP_${this.selectedMonth}_${this.trainingName}_SN`
+      return `VILT_${this.region !== 'Americas'?'CMP':'MX'}_${this.selectedMonth}_${this.trainingName}_SN${this.classNumber}`
     },
     formattedStartDate(){
       if(this.startDate !== null){

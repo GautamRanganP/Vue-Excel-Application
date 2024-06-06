@@ -351,9 +351,33 @@ console.log("data",extractedData);
         //   })
         // }     
 
-        // const headerObjects = headerColumn.map(header => {
-        //     return { [header]: '' }; 
-        // });
+        const rowOne = this.headerColumn.map(header => {
+          switch (header) {        
+            case "Activity Code":     
+              return { [header]: this.activityClassCode };        
+              break;    
+            case "Name":    
+              return { [header]: '' };        
+              break;        
+            case "Parent Code":             // Action for Parent Code
+              return { [header]: '' };
+              break;         
+            case "Parent Start Date":             // Action for Parent Start Date
+              return { [header]: '' };
+              break;     
+            case "Activity Label":             // Action for Activity Label
+              return { [header]: '' };
+              break;     
+            case "Domain Code": // Action for Domain Code
+              return { [header]: '' };  
+              break; 
+            default: // Handle unknown headers
+              return { [header]: '' };
+              break;
+          }
+            return { [header]: '' }; 
+        });
+        console.log("rowOne",rowOne.map((row)=>{return Object.value(row)}))
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('Session CreationTMU')       // Add header row    
         worksheet.addRow(this.headerColumn);       // Add data rows    
@@ -372,7 +396,7 @@ console.log("data",extractedData);
         });     
         column.width = maxLength < 20 ? 20 : maxLength; 
       });
-  
+      worksheet.addRow(rowOne.map((row)=>{return Object.value(row)}))
         // attendedData.forEach(row => {
         //   worksheet.addRow([row['Employee Number'], row.ActivityCode,this.formattedStartDate,this.formattedStartDate,this.formattedEndDate, " ", " ", " ", " ", " ", " ", " ", row.Timezone, row.Status, " ", row['Subscription Source Activity Code'], " ", " ", row['Completion Status'], " ", " ", " "]);
         // });

@@ -328,56 +328,129 @@ console.log("data",extractedData);
         // console.log("data", jsonData)
       },
       async exportToExcel() {    
-  
-        const rowDataForAttended = [
-          { 'Employee Number': '', 'ActivityCode': this.activitySessionCode, 'Class Start Date': this.startDate, 'Registration Date': this.startDate, 'Completion Date': this.endDate, 'First Launch Date': '', 'Score': '', 'Passed': '', 'Cancellation Date': '', 'Payment Term': '', 'Cost': '', 'Currency': '', 'Timezone': this.timeZone, 'Status': 4, 'Notes': '', 'Subscription Source Activity Code': this.activityClassCode, 'Subscription Source Activity Start Date': '', 'Elapsed Time (in seconds)': '', 'Completion Status': 1, 'Location_Name': '', 'Slotstart_Date': '', 'Slotend_Date': '' }]
-          const rowDataForNotAttended = [
-          { 'Employee Number': '', 'ActivityCode': this.activitySessionCode, 'Class Start Date': this.startDate, 'Registration Date': this.startDate, 'Completion Date': this.endDate, 'First Launch Date': '', 'Score': '', 'Passed': '', 'Cancellation Date': '', 'Payment Term': '', 'Cost': '', 'Currency': '', 'Timezone': this.timeZone, 'Status': null, 'Notes': '', 'Subscription Source Activity Code': this.activityClassCode, 'Subscription Source Activity Start Date': '', 'Elapsed Time (in seconds)': '', 'Completion Status': null, 'Location_Name': '', 'Slotstart_Date': '', 'Slotend_Date': '' }]
-        
-        //   const attendedData = []
-        // if (this.employeeIdsOfAttended && this.employeeIdsOfAttended.length > 0) {
-        //   this.employeeIdsOfAttended.forEach((employeeId) => {
-        //     const clonedEmployeeRowData = JSON.parse(JSON.stringify(rowDataForAttended[0]))
-        //     clonedEmployeeRowData['Employee Number'] = employeeId.number
-        //     attendedData.push(clonedEmployeeRowData)
-        //   })
-        // }
-        // const notAttendedData = []
-        // if (this.employeeIdsOfNotAttended && this.employeeIdsOfNotAttended.length > 0) {
-        //   this.employeeIdsOfNotAttended.forEach((employeeId) => {
-        //     const clonedEmployeeRowData = JSON.parse(JSON.stringify(rowDataForNotAttended[0]))
-        //     clonedEmployeeRowData['Employee Number'] = employeeId.number
-        //     notAttendedData.push(clonedEmployeeRowData)
-        //   })
-        // }     
-
         const rowOne = this.headerColumn.map(header => {
           switch (header) {        
             case "Activity Code":     
               return { [header]: this.activityClassCode };        
-              break;    
             case "Name":    
-              return { [header]: '' };        
-              break;        
-            case "Parent Code":             // Action for Parent Code
+              return { [header]: `${this.trainingName} 2024` };        
+            case "Activity Label":             
+              return { [header]: 'ILT Course' };
+            case "Domain Code":
+              return { [header]: 'Global' };
+              case "Description": 
+              return { [header]: 1 };  
+              case "Time zone": 
+              return { [header]: this.timeZone };
+              case "Hidden from search": 
+              return { [header]: 1 }
+              case "Can Be Copied": 
+              return { [header]: 1 }
+              case "Contribute to parent activity": 
+              return { [header]: 1 }
+            default:
               return { [header]: '' };
-              break;         
-            case "Parent Start Date":             // Action for Parent Start Date
-              return { [header]: '' };
-              break;     
+          }
+        });
+        const rowTwo = this.headerColumn.map(header => {
+          switch (header) {        
+            case "Activity Code":     
+              return { [header]: this.activityClassCode };        
+            case "Name":    
+              return { [header]: `${this.trainingName} 2024` };        
+            case "Parent Code":             
+              return { [header]: this.activityCourseCode };    
             case "Activity Label":             // Action for Activity Label
-              return { [header]: '' };
-              break;     
-            case "Domain Code": // Action for Domain Code
-              return { [header]: '' };  
-              break; 
+              return { [header]: 'ILT Class' };
+            case "Domain Code": 
+              return { [header]: 'Global' };  
+            case "Start Date": 
+              return { [header]: this.formattedStartDate };  
+            case "End Date": 
+              return { [header]: this.formattedEndDate };  
+              case "Delivery Method": 
+              return { [header]: "Virtual" };  
+            case "Active Indicator": 
+              return { [header]: 1 };  
+              case "Open Indicator": 
+              return { [header]: 1 };  
+            case "Cancel Indicator": 
+              return { [header]: 0 };  
+              case "Link Type": 
+              return { [header]: 1 };  
+              case "Status": 
+              return { [header]: 1 }; 
+              case "Media Type": 
+              return { [header]: "" }; 
+              case "Description": 
+              return { [header]: 1 }; 
+              case "Hours": 
+              return { [header]: 1 };  
+              case "Instructor Note": 
+              return { [header]: this.hexavarsityLocation }; 
+              case "Time zone": 
+              return { [header]: this.timeZone };
+              case "Location": 
+              return { [header]: this.location };
+              case "Hidden from search": 
+              return { [header]: 1 }
+              case "Can Be Copied": 
+              return { [header]: 1 }
+              case "Contribute to parent activity": 
+              return { [header]: 1 }
+              case "Keywords": 
+              return { [header]: 'NA' }
             default: // Handle unknown headers
               return { [header]: '' };
               break;
           }
-            return { [header]: '' }; 
         });
-        console.log("rowOne",rowOne.map((row)=>{return Object.values(row)}))
+        const rowThree = this.headerColumn.map(header => {
+          switch (header) {        
+            case "Activity Code":     
+              return { [header]: this.activitySessionCode };        
+              break;    
+            case "Name":    
+              return { [header]: `${this.trainingName} 2024 ${this.selectedMonth} Class ${this.classNumber}` };        
+            case "Parent Code":            
+              return { [header]: this.activityClassCode };
+            case "Parent Start Date":             
+              return { [header]:  this.formattedStartDate };   
+            case "Activity Label":             
+              return { [header]: 'Session' };     
+            case "Domain Code": 
+              return { [header]: 'Global' };  
+              case "Start Date": 
+              return { [header]: this.formattedStartDate };  
+            case "End Date": 
+              return { [header]: this.formattedEndDate };    
+            case "Active Indicator": 
+              return { [header]: 1 };  
+              case "Open Indicator": 
+              return { [header]: 1 };  
+            case "Cancel Indicator": 
+              return { [header]: 0 };  
+              case "Link Type": 
+              return { [header]: 2 }; 
+              case "Description": 
+              return { [header]: 1 };  
+              case "Instructor Note": 
+              return { [header]: this.hexavarsityLocation }; 
+              case "Time zone": 
+              return { [header]: this.timeZone };
+              case "Location": 
+              return { [header]: this.location };
+              case "Hidden from search": 
+              return { [header]: 1 }
+              case "Can Be Copied": 
+              return { [header]: 1 }
+              case "Contribute to parent activity": 
+              return { [header]: 1 } 
+            default: 
+              return { [header]: '' };
+          } 
+        });
+        console.log("rowOne",rowOne.flatMap((row)=>Object.values(row)))
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('Session CreationTMU')       // Add header row    
         worksheet.addRow(this.headerColumn);       // Add data rows    
@@ -396,14 +469,9 @@ console.log("data",extractedData);
         });     
         column.width = maxLength < 20 ? 20 : maxLength; 
       });
-      worksheet.addRow(rowOne.map((row)=>{return Object.values(row)}))
-        // attendedData.forEach(row => {
-        //   worksheet.addRow([row['Employee Number'], row.ActivityCode,this.formattedStartDate,this.formattedStartDate,this.formattedEndDate, " ", " ", " ", " ", " ", " ", " ", row.Timezone, row.Status, " ", row['Subscription Source Activity Code'], " ", " ", row['Completion Status'], " ", " ", " "]);
-        // });
-        // notAttendedData.forEach(row => {
-        //   worksheet.addRow([row['Employee Number'], row.ActivityCode,this.formattedStartDate,this.formattedStartDate, " ", " ", " ", " ", " ", " ", " ", " ", row.Timezone, " ", " ", row['Subscription Source Activity Code'], " ", " ", " ", " ", " ", " "]);
-        // });
-  
+      worksheet.addRow(rowOne.flatMap((row)=>Object.values(row)))
+      worksheet.addRow(rowTwo.flatMap((row)=>Object.values(row)))
+      worksheet.addRow(rowThree.flatMap((row)=>Object.values(row)))
         // Save the workbook to a blob   
         const blob = await workbook.xlsx.writeBuffer();
         // Create a blob URL     
@@ -420,7 +488,13 @@ console.log("data",extractedData);
         return this.region !== 'Americas' ? 'Asia/Calcutta' : 'America/Mexico City'
       },
       location() {
+        return this.region !== 'Americas' ? 'India' : 'Americas'
+      },
+      hexavarsityLocation() {
         return this.region !== 'Americas' ? 'Hexavarsity India' : 'Hexavarsity Americas'
+      },
+      activityCourseCode(){
+        return `VILT_${this.region !== 'Americas'?'CMP':'MX'}_${this.trainingName} 2024`
       },
       activityClassCode(){
         return `VILT_${this.region !== 'Americas'?'CMP':'MX'}_${this.selectedMonth}_${this.trainingName}_CLS${this.classNumber}`

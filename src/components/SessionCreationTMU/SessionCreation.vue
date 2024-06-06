@@ -252,18 +252,12 @@
         classNumber: 1,
         isIndia: false,
         region: 'India',
-        attended: '',
-        notAttended: '',
-        employeeIdsOfAttended: [],
-        employeeIdsOfNotAttended: [],
         filteredEmpId:[],
         employessData:[]
-        
-        // Your reactive data properties here
       };
     },
     watch: {
-   
+  
     },
     methods: {
       searchEmployeeId(event) {
@@ -323,15 +317,13 @@ const extractedData = dataRows.map(row => {
   return rowData;
 });
 this.employessData = extractedData
-console.log("data",extractedData);
-
-        // console.log("data", jsonData)
+      console.log("data",extractedData);
       },
       async exportToExcel() {    
         const rowOne = this.headerColumn.map(header => {
           switch (header) {        
             case "Activity Code":     
-              return { [header]: this.activityClassCode };        
+              return { [header]: this.activityCourseCode };        
             case "Name":    
               return { [header]: `${this.trainingName} 2024` };        
             case "Activity Label":             
@@ -357,7 +349,7 @@ console.log("data",extractedData);
             case "Activity Code":     
               return { [header]: this.activityClassCode };        
             case "Name":    
-              return { [header]: `${this.trainingName} 2024` };        
+              return { [header]: `${this.trainingName}_${this.getStartDayAndMonth} - ${this.getEndDayAndMonth}` };        
             case "Parent Code":             
               return { [header]: this.activityCourseCode };    
             case "Activity Label":             // Action for Activity Label
@@ -400,16 +392,14 @@ console.log("data",extractedData);
               return { [header]: 1 }
               case "Keywords": 
               return { [header]: 'NA' }
-            default: // Handle unknown headers
+            default:
               return { [header]: '' };
-              break;
           }
         });
         const rowThree = this.headerColumn.map(header => {
           switch (header) {        
             case "Activity Code":     
-              return { [header]: this.activitySessionCode };        
-              break;    
+              return { [header]: this.activitySessionCode };          
             case "Name":    
               return { [header]: `${this.trainingName} 2024 ${this.selectedMonth} Class ${this.classNumber}` };        
             case "Parent Code":            
@@ -450,14 +440,12 @@ console.log("data",extractedData);
               return { [header]: '' };
           } 
         });
-        console.log("rowOne",rowOne.flatMap((row)=>Object.values(row)))
         const workbook = new ExcelJS.Workbook();
-        const worksheet = workbook.addWorksheet('Session CreationTMU')       // Add header row    
-        worksheet.addRow(this.headerColumn);       // Add data rows    
-        const headerRow = worksheet.getRow(1);
-        worksheet.getColumn(3).numFmt = 'm/d/yyyy h:mm';
+        const worksheet = workbook.addWorksheet('Session CreationTMU')     
+        worksheet.addRow(this.headerColumn);        
         worksheet.getColumn(4).numFmt = 'm/d/yyyy h:mm';
-        worksheet.getColumn(5).numFmt = 'm/d/yyyy h:mm';
+        worksheet.getColumn(7).numFmt = 'm/d/yyyy h:mm';
+        worksheet.getColumn(8).numFmt = 'm/d/yyyy h:mm';
         worksheet.columns.forEach((column, columnIndex) => {     
         let maxLength = 0;     
         column.eachCell({ includeEmpty: true }, (cell) => {         
@@ -472,9 +460,7 @@ console.log("data",extractedData);
       worksheet.addRow(rowOne.flatMap((row)=>Object.values(row)))
       worksheet.addRow(rowTwo.flatMap((row)=>Object.values(row)))
       worksheet.addRow(rowThree.flatMap((row)=>Object.values(row)))
-        // Save the workbook to a blob   
         const blob = await workbook.xlsx.writeBuffer();
-        // Create a blob URL     
         const blobUrl = window.URL.createObjectURL(new Blob([blob], { type: 'application/octet-stream' }));       // Create a download link      
         const downloadLink = document.createElement('a');
         downloadLink.href = blobUrl;
@@ -521,7 +507,22 @@ console.log("data",extractedData);
           return parsedDate;
         }
         return null
+      },
+      getStartDayAndMonth(){
+        if(this.startDate !== null){
+          const formattedDate = moment(this.startDate).format("D MMM");
+          return formattedDate
+        }
+        return null
+      },
+      getEndDayAndMonth(){
+        if(this.endDate !== null){
+          const formattedDate = moment(this.endDate).format("D MMM");
+          return formattedDate
+        }
+        return null
       }
+
     },
     // Other options like 'created', 'mounted', etc. can be defined here
   };

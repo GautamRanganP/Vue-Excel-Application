@@ -377,7 +377,7 @@ console.log("data",extractedData);
           }
             return { [header]: '' }; 
         });
-        console.log("rowOne",rowOne.map((row)=>{return Object.value(row)}))
+        console.log("rowOne",rowOne.map((row)=>{return Object.values(row)}))
         const workbook = new ExcelJS.Workbook();
         const worksheet = workbook.addWorksheet('Session CreationTMU')       // Add header row    
         worksheet.addRow(this.headerColumn);       // Add data rows    
@@ -396,7 +396,7 @@ console.log("data",extractedData);
         });     
         column.width = maxLength < 20 ? 20 : maxLength; 
       });
-      worksheet.addRow(rowOne.map((row)=>{return Object.value(row)}))
+      worksheet.addRow(rowOne.map((row)=>{return Object.values(row)}))
         // attendedData.forEach(row => {
         //   worksheet.addRow([row['Employee Number'], row.ActivityCode,this.formattedStartDate,this.formattedStartDate,this.formattedEndDate, " ", " ", " ", " ", " ", " ", " ", row.Timezone, row.Status, " ", row['Subscription Source Activity Code'], " ", " ", row['Completion Status'], " ", " ", " "]);
         // });

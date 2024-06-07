@@ -21,8 +21,27 @@
                   <InputText type="number" v-model="classNumber" />
                 </div>
                 <div class="row">
-                  <label>Training name</label>
-                    <Dropdown v-model="selectedMonth" :options="months" placeholder="Select a Month" class="w-full md:w-14rem" />
+                <label>Description</label>
+                <div style="display: flex;align-items: center;gap: 5px;">
+                  <RadioButton v-model="trainingDescrition" inputId="description1" name="description" value="Technical" />
+                  <label for="description1" style="margin-right: 10px;">Technical</label>
+                </div>
+                <div style="display: flex;align-items: center;gap: 5px;">
+                  <RadioButton v-model="region" inputId="description2" name="description" value="Language" />
+                  <label for="description2" style="margin-right: 10px;" class="ml-2">Language</label>
+                </div>
+                <div style="display: flex;align-items: center;gap: 5px;">
+                  <RadioButton v-model="region" inputId="description3" name="description" value="Behavioral" />
+                  <label for="description3" class="ml-2">Behavioral</label>
+                </div>
+              </div>
+                <div class="row">
+                  <label>Training Month</label>
+                  <Dropdown v-model="selectedMonth" :options="months" placeholder="Select a Month" class="w-full md:w-14rem" />
+                </div>
+                <div class="row">
+                  <label>Competency Dev</label>
+                  <Dropdown v-model="selectedCompetency" :options="competencyDev" placeholder="Select a Competency" class="w-full md:w-14rem" />
                 </div>
               </div>
               <div class="row">
@@ -38,6 +57,7 @@
                 <!-- <label>Check the box if it is India Training</label>
         <Checkbox v-model="isIndia" :binary="true" /> -->
               </div>
+              
               <div class="row">
                 <label>Start Date</label>
                 <!-- <Calendar id="calendar-12h" v-model="startDate" showTime hourFormat="12" /> -->
@@ -240,9 +260,11 @@
             "Cancel Version Registrations",
             "Open Content in Tab"
         ],
+        selectedCompetency:null,
         selectedEmpId:null,
         trainerEmpId:null,
         months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+        competencyDev: ["BIBA","IMS"],
         selectedMonth:null,
         employeeNo: '63863',
         trainingName: null,
@@ -254,6 +276,7 @@
         classNumber: 1,
         isIndia: false,
         region: 'India',
+        trainingDescrition: 'Technical',
         filteredEmpId:[],
         employessData:[]
       };
@@ -339,7 +362,7 @@ this.employessData = extractedData
             case "Domain Code":
               return { [header]: 'Global' };
               case "Description": 
-              return { [header]: 1 };  
+              return { [header]: this.formattedTrainingDescription };  
               case "Time zone": 
               return { [header]: this.timeZone };
               case "Hidden from search": 
@@ -381,9 +404,9 @@ this.employessData = extractedData
               case "Status": 
               return { [header]: 1 }; 
               case "Media Type": 
-              return { [header]: "" }; 
+              return { [header]: this.region === "India" ? this.selectedCompetency : 'Common' }; 
               case "Description": 
-              return { [header]: 1 }; 
+              return { [header]: this.formattedTrainingDescription }; 
               case "Hours": 
               return { [header]: 1 };  
               case "Instructor Note": 
@@ -433,7 +456,7 @@ this.employessData = extractedData
               case "Link Type": 
               return { [header]: 2 }; 
               case "Description": 
-              return { [header]: 1 };  
+              return { [header]: this.formattedTrainingDescription };  
               case "Instructor Note": 
               return { [header]: this.hexavarsityLocation }; 
               case "Time zone": 
@@ -482,6 +505,17 @@ this.employessData = extractedData
       }
     },
     computed: {
+      formattedTrainingDescription(){
+        if(this.region === 'India'){
+          return `${this.trainingDescrition};Competency Dev;Unit Specific;${this.selectedCompetency}`
+        }
+        else{
+          if(this.trainingDescrition === 'Process'){
+            return `${this.trainingDescrition};${this.trainingDescrition};Generic;Hexavarsity Americas`
+          }
+          return `${this.trainingDescrition};Demand Based;Generic;Hexavarsity Americas`
+        }
+      },
       timeZone() {
         return this.region !== 'Americas' ? 'Asia/Calcutta' : 'America/Mexico City'
       },

@@ -49,9 +49,13 @@
               </div>
               <div class="row">
                 <label>Trainer Employee ID</label>
-                <AutoComplete v-model="selectedEmpId" optionLabel="name" :suggestions="filteredEmpId" @complete="searchEmployeeId" />
+                <AutoComplete v-model="selectedEmpId" multiple optionLabel="NEW_EMP_ID" :suggestions="filteredEmpId" @complete="searchEmployeeId" />
 
                 <!-- <InputText type="text" v-model="trainerEmpId" /> -->
+              </div>
+              <div class="row">
+                <label>Trainer Name</label>
+                <InputText type="text" v-model="trainerName" disabled />
               </div>
               <Button @click="exportToExcel">Session Creation TMU</Button>
         </div>
@@ -66,9 +70,7 @@
                   </InputGroup>
                   <!-- <InputText type="text" v-model="sessionCode" /> -->
                 </div>
-          <DataTable :value="employeeIdsOfAttended" showGridlines>
-            <Column field="number" header="Attended"></Column>
-          </DataTable>
+          
           <div class="row">
                   <label>Class Code</label>
                   <InputGroup>
@@ -79,9 +81,9 @@
                   </InputGroup>
                   <!-- <InputText type="text" v-model="classCode" /> -->
                 </div>
-          <DataTable :value="employeeIdsOfNotAttended" showGridlines>
-            <Column field="number" header="Not Attended"></Column>
-          </DataTable>
+                <DataTable :value="selectedEmpId">
+                  <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header"></Column>
+                </DataTable>
         </div>
   
   
@@ -259,20 +261,26 @@
     watch: {
   
     },
+    created(){
+      this.columns = [
+            { field: 'EMP ID', header: 'EMP ID' },
+            { field: 'NAME', header: 'NAME' },
+            // { field: 'category', header: 'Category' },
+            // { field: 'quantity', header: 'Quantity' }
+        ];
+    },
     methods: {
       searchEmployeeId(event) {
             setTimeout(() => {
                 if (!event.query.trim().length) {
                     // this.filteredEmpId = [...this.employessData.NEW_EMP_ID];
                 } else {
-                  let filterResults = []   
-                  filterResults = this.employessData.filter((country) => {
-                      console.log("search",country.NEW_EMP_ID)
-                        return country.NEW_EMP_ID.toString().toLowerCase().startsWith(event.query.toLowerCase());
-                    }).slice(0, 10).map((employee)=>{return employee.NEW_EMP_ID});
-                    this.filteredEmpId = [...filterResults]
-                    // this.filteredEmpId = filterResults.map((results)=> {return results.NEW_EMP_ID});
-                    console.log("empid",this.filteredEmpId)
+                  const nonReactiveData = Object.assign([], this.employessData); // Create a non-reactive copy of the data
+                  const filterResults = nonReactiveData.filter((country) => {
+                  return country.NEW_EMP_ID.toString().toLowerCase().startsWith(event.query.toLowerCase());
+                  }).slice(0, 10)
+                  this.filteredEmpId= filterResults;
+                  console.log("empid",JSON.parse(JSON.stringify(this.filteredEmpId)))
                 }
             }, 250);
       },
@@ -470,6 +478,17 @@ this.employessData = extractedData
       }
     },
     computed: {
+      trainerName(){
+        return this.selectedEmpId ? this.selectedEmpId.NAME : null;
+      },
+      trainerDetails(){
+        console.log('seleted',this.selectedEmpId)
+        if(this.selectedEmpId && this.selectedEmpId.length > 0 ){
+          console.log("Trainer Details",this.employessData.filter((employee) => this.selectedEmpId.includes(employee['EMP ID'])))
+          return this.employessData.filter((employee) => this.selectedEmpId.includes(employee['EMP ID']))
+        }
+        return [];
+      },
       timeZone() {
         return this.region !== 'Americas' ? 'Asia/Calcutta' : 'America/Mexico City'
       },

@@ -27,15 +27,15 @@
                   <label for="description1" style="margin-right: 10px;">Technical</label>
                 </div>
                 <div style="display: flex;align-items: center;gap: 5px;">
-                  <RadioButton v-model="region" inputId="description2" name="description" value="Language" />
+                  <RadioButton v-model="trainingDescrition" inputId="description2" name="description" value="Language" />
                   <label for="description2" style="margin-right: 10px;" class="ml-2">Language</label>
                 </div>
                 <div style="display: flex;align-items: center;gap: 5px;">
-                  <RadioButton v-model="region" inputId="description3" name="description" value="Behavioral" />
+                  <RadioButton v-model="trainingDescrition" inputId="description3" name="description" value="Behavioral" />
                   <label for="description3" class="ml-2">Behavioral</label>
                 </div>
                 <div style="display: flex;align-items: center;gap: 5px;">
-                  <RadioButton v-model="region" inputId="description4" name="description" value="Process" />
+                  <RadioButton v-model="trainingDescrition" inputId="description4" name="description" value="Process" />
                   <label for="description4" class="ml-2">Process</label>
                 </div>
               </div>

@@ -420,7 +420,7 @@ this.employessData = extractedData
               case "Keywords": 
               return { [header]: 'NA' }
               case "Instructor": 
-              return { [header]: this.selectedEmpId[0]['EMP ID'] }; 
+              return { [header]: this.selectedEmpId && this.selectedEmpId.length > 0 ? this.selectedEmpId[0]['EMP ID'] : ''}; 
             default:
               return { [header]: '' };
           }

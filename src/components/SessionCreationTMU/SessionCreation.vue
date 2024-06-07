@@ -34,6 +34,10 @@
                   <RadioButton v-model="region" inputId="description3" name="description" value="Behavioral" />
                   <label for="description3" class="ml-2">Behavioral</label>
                 </div>
+                <div style="display: flex;align-items: center;gap: 5px;">
+                  <RadioButton v-model="region" inputId="description4" name="description" value="Process" />
+                  <label for="description4" class="ml-2">Process</label>
+                </div>
               </div>
                 <div class="row">
                   <label>Training Month</label>

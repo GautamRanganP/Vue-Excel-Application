@@ -58,8 +58,6 @@
                   <RadioButton v-model="region" inputId="ingredient2" name="pizza" value="Americas" />
                   <label for="ingredient2" class="ml-2">Americas</label>
                 </div>
-                <!-- <label>Check the box if it is India Training</label>
-        <Checkbox v-model="isIndia" :binary="true" /> -->
               </div>
               
               <div class="row">
@@ -71,6 +69,10 @@
                 <label>End Date</label>
                 <Calendar id="calendar-24h" v-model="endDate" showTime hourFormat="24" />
               </div>
+              <div class="row">
+                  <label>Hours</label>
+                  <InputText type="number" v-model="trainingDuration" />
+                </div>
               <div class="row">
                 <label>Trainer Employee ID</label>
                 <AutoComplete v-model="selectedEmpId" multiple optionLabel="NEW_EMP_ID" :suggestions="filteredEmpId" @complete="searchEmployeeId" />
@@ -264,6 +266,7 @@
             "Cancel Version Registrations",
             "Open Content in Tab"
         ],
+        trainingDuration:1,
         selectedCompetency:null,
         selectedEmpId:null,
         trainerEmpId:null,
@@ -330,20 +333,9 @@
           jsonData.push(rowData);
         });
         this.data = jsonData;
-        // Provided Excel-like array
-// const excelData = [
-//   ["EMPID", "Name"],
-//   [1234, "Gautam"],
-//   [4343, "Raja"]
-// ];
-
-// Extracting headers (first row)
-const headers = jsonData[0];
-
-// Extracting data rows (excluding headers)
+      const headers = jsonData[0];
 const dataRows = jsonData.slice(1);
 
-// Convert data to an array of objects
 const extractedData = dataRows.map(row => {
   const rowData = {};
   headers.forEach((header, index) => {
@@ -412,7 +404,7 @@ this.employessData = extractedData
               case "Description": 
               return { [header]: this.formattedTrainingDescription }; 
               case "Hours": 
-              return { [header]: 1 };  
+              return { [header]: trainingDuration };  
               case "Instructor Note": 
               return { [header]: this.hexavarsityLocation }; 
               case "Time zone": 

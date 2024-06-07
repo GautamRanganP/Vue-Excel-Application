@@ -53,10 +53,10 @@
 
                 <!-- <InputText type="text" v-model="trainerEmpId" /> -->
               </div>
-              <div class="row">
+              <!-- <div class="row">
                 <label>Trainer Name</label>
                 <InputText type="text" v-model="trainerName" disabled />
-              </div>
+              </div> -->
               <Button @click="exportToExcel">Session Creation TMU</Button>
         </div>
         <div class="input-preview-data">
@@ -400,6 +400,8 @@ this.employessData = extractedData
               return { [header]: 1 }
               case "Keywords": 
               return { [header]: 'NA' }
+              case "Instructor": 
+              return { [header]: this.selectedEmpId[0]['EMP ID'] }; 
             default:
               return { [header]: '' };
           }
@@ -444,7 +446,9 @@ this.employessData = extractedData
               return { [header]: 1 }
               case "Contribute to parent activity": 
               return { [header]: 1 } 
-            default: 
+              case "Instructor": 
+              return { [header]: this.selectedEmpId[0]['EMP ID'] }; 
+              default: 
               return { [header]: '' };
           } 
         });
@@ -478,17 +482,6 @@ this.employessData = extractedData
       }
     },
     computed: {
-      trainerName(){
-        return this.selectedEmpId ? this.selectedEmpId.NAME : null;
-      },
-      trainerDetails(){
-        console.log('seleted',this.selectedEmpId)
-        if(this.selectedEmpId && this.selectedEmpId.length > 0 ){
-          console.log("Trainer Details",this.employessData.filter((employee) => this.selectedEmpId.includes(employee['EMP ID'])))
-          return this.employessData.filter((employee) => this.selectedEmpId.includes(employee['EMP ID']))
-        }
-        return [];
-      },
       timeZone() {
         return this.region !== 'Americas' ? 'Asia/Calcutta' : 'America/Mexico City'
       },

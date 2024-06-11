@@ -379,6 +379,12 @@ this.employessData = extractedData
               return { [header]: 'Global' };
               case "Description": 
               return { [header]: this.formattedTrainingDescription };  
+              case "Active Indicator": 
+              return { [header]: 1 };  
+              case "Open Indicator": 
+              return { [header]: 1 };  
+            case "Cancel Indicator": 
+              return { [header]: 0 };
               case "Time zone": 
               return { [header]: this.timeZone };
               case "Hidden from search": 

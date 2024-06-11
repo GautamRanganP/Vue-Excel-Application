@@ -79,6 +79,11 @@
 
                 <!-- <InputText type="text" v-model="trainerEmpId" /> -->
               </div>
+              <div class="row">
+                <label>Trainer Employee Name</label>
+                <AutoComplete v-model="selectedEmpName" multiple optionLabel="NAME" :suggestions="filteredName" @complete="searchEmployeeName" />
+                <!-- <InputText type="text" v-model="trainerEmpId" /> -->
+              </div>
               <!-- <div class="row">
                 <label>Trainer Name</label>
                 <InputText type="text" v-model="trainerName" disabled />
@@ -131,7 +136,8 @@
   export default {
     data() {
       return {
-        
+        selectedEmpName:null,
+        filteredName:null,
         headerColumn: [
             "Activity Code",
             "Name",
@@ -314,6 +320,20 @@
                 }
             }, 250);
       },
+      searchEmployeeName(event) {
+            setTimeout(() => {
+                if (!event.query.trim().length) {
+                    // this.filteredEmpId = [...this.employessData.NEW_EMP_ID];
+                } else {
+                  const nonReactiveData = Object.assign([], this.employessData); // Create a non-reactive copy of the data
+                  const filterResults = nonReactiveData.filter((country) => {
+                  return country.NAME.toString().toLowerCase().startsWith(event.query.toLowerCase());
+                  }).slice(0, 10)
+                  this.filteredName= filterResults;
+                  console.log("empid",JSON.parse(JSON.stringify(this.filteredName)))
+                }
+            }, 250);
+      },
       onUpload() {
             this.$toast.add({ severity: 'info', summary: 'Success', detail: 'File Uploaded', life: 3000 });
       },
@@ -404,7 +424,7 @@ this.employessData = extractedData
               case "Description": 
               return { [header]: this.formattedTrainingDescription }; 
               case "Hours": 
-              return { [header]: trainingDuration };  
+              return { [header]: this.trainingDuration };  
               case "Instructor Note": 
               return { [header]: this.hexavarsityLocation }; 
               case "Time zone": 
@@ -420,7 +440,7 @@ this.employessData = extractedData
               case "Keywords": 
               return { [header]: 'NA' }
               case "Instructor": 
-              return { [header]: this.selectedEmpId && this.selectedEmpId.length > 0 ? this.selectedEmpId[0]['EMP ID'] : ''}; 
+              return { [header]: this.selectedEmpName && this.selectedEmpName.length > 0 ? this.selectedEmpName[0]['EMP ID'] : ''}; 
             default:
               return { [header]: '' };
           }
@@ -466,7 +486,7 @@ this.employessData = extractedData
               case "Contribute to parent activity": 
               return { [header]: 1 } 
               case "Instructor": 
-              return { [header]: this.selectedEmpId[0]['EMP ID'] }; 
+              return { [header]: this.selectedEmpName[0]['EMP ID'] }; 
               default: 
               return { [header]: '' };
           } 

@@ -2,11 +2,11 @@
   <div>
     <h1>PDF Text Extractor</h1>
     <input type="file" @change="handleFileUpload" />
-    <div v-if="pdfData.metadata">
+    <!-- <div v-if="pdfData.metadata">
       <h2>Metadata</h2>
       <pre>{{ JSON.stringify(pdfData.metadata, null, 2) }}</pre>
-    </div>
-    <div v-if="pdfData.textContent">
+    </div> -->
+    <!-- <div v-if="pdfData.textContent">
       <h2>Text Content</h2>
       <pre>{{ pdfData.textContent }}</pre>
     </div>
@@ -15,7 +15,7 @@
     <div v-if="extractedDate">
       <h2>Extracted Date:</h2>
       <p>{{ extractedDate }}</p>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -78,11 +78,29 @@ export default {
           const pageText = textContentItems.items.map(item => item.str).join(' ');
           textContent += `Page ${pageNum}:\n${pageText}\n\n`;
         }
-console.log("meta",metadata.info.CreationDate)
+        this.$emit('metaDataFromPdf',metadata.info.CreationDate)
+        console.log("meta",metadata.info.CreationDate)
         this.pdfData = { textContent, metadata };
       } catch (error) {
         console.error('Error loading PDF:', error);
       }
+    }
+  },
+  computed:{
+    creationDate(timestamp){
+// const timestamp = "D:20231113075823+00'00'";
+
+// Extract the date portion from the string
+const dateStr = timestamp.substring(2, 10);
+
+// Parse the date string into a Date object
+const year = dateStr.substring(0, 4);
+const month = dateStr.substring(4, 6);
+const day = dateStr.substring(6, 8);
+
+// Format the date in DD/MM/YYYY format
+const formattedDate = `${day}/${month}/${year}`;
+    return formattedDate
     }
   }
 };

@@ -24,7 +24,6 @@ import FileUpload from 'primevue/fileupload';
 // import PDFTextExtractor from './components/PDFTextExtractor.vue';
 
 
-
 createApp(App)
 .use(PrimeVue)
 .use(router)

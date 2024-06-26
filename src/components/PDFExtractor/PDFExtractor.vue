@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h1>PDF Text Extractor</h1>
-    <input type="file" @change="handleFileUpload" />
+   <InputText type="file" @change="handleFileUpload" accept=".pdf" class="grp-input"/>
+    <!-- <input type="file" @change="handleFileUpload" /> -->
     <!-- <div v-if="pdfData.metadata">
       <h2>Metadata</h2>
       <pre>{{ JSON.stringify(pdfData.metadata, null, 2) }}</pre>

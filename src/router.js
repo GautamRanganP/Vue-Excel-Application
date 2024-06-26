@@ -6,8 +6,8 @@ import CertificateValidation from './components/CertificateValition.Vue/Certific
 
 const routes = [
   { path: '/', component: AttendanceUpload },
-  { path: '/about', component: SessionCreation },
-  { path: '/attendance', component: CertificateValidation }
+  { path: '/sessionCreation', component: SessionCreation },
+  { path: '/certificationValidator', component: CertificateValidation }
 ]
  
 const router = createRouter({

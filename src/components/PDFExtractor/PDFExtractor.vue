@@ -30,12 +30,25 @@ export default {
       pdfData: {
         textContent: '',
         metadata: {},
-          textInput: '',
-      extractedDate: null
+        textInput: '',
+        extractedDate: null
       }
     };
   },
   methods: {
+    azureValidate(text){
+      // Define the regex pattern for the certification name
+      const pattern = /Microsoft Certified: [\w\s]+/;
+      const match = text.match(pattern);
+      if (match) {
+        const certificationName = match[0];
+  
+        this.$emit('certificationName',certificationName)
+        console.log("Certification name:", certificationName);
+      } else {
+        console.log("Certification name not found.");
+      }
+    },
     extractDate() {
       // Flexible regex to match dates in the format "Month Day, Year"
       const regex = /(\b\w+\s\d{1,2},\s\d{4}\b)/;

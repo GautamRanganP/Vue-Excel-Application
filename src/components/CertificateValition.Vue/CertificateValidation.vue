@@ -14,7 +14,7 @@
       </div>
         <div class="row">
        <label>Completion Date</label>
-          <PDFExtractor @metaDataFromPdf= "handleDate"/>
+          <PDFExtractor @metaDataFromPdf= "handleDate" @certificationName="handleCertificate"/>
         </div>
          <div class="row">
           <label>Certification Name</label>
@@ -98,6 +98,9 @@ export default {
       handleDate(timestamp){
         this.creationDate = this.formattedCreationDate(timestamp)
       },
+      handleCertificate(name){
+        this.certName = name
+      }
     }
 };
 </script>

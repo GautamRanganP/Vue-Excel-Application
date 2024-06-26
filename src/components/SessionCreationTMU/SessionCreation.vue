@@ -43,7 +43,7 @@
                   <label>Training Month</label>
                   <Dropdown v-model="selectedMonth" :options="months" placeholder="Select a Month" class="w-full md:w-14rem" />
                 </div>
-                <div class="row">
+                <div class="row" v-if="this.region === 'India'">
                   <label>Competency Dev</label>
                   <Dropdown v-model="selectedCompetency" :options="competencyDev" placeholder="Select a Competency" class="w-full md:w-14rem" />
                 </div>
@@ -73,6 +73,18 @@
                   <label>Hours</label>
                   <InputText type="number" v-model="trainingDuration" />
                 </div>
+
+                <div class="row">
+                <label>Training Type</label>
+                <div style="display: flex;align-items: center;gap: 5px;">
+                  <RadioButton v-model="trainerType" inputId="ingredient1" name="pizza" value="Internal" />
+                  <label for="ingredient1" style="margin-right: 10px;">Internal</label>
+                </div>
+                <div style="display: flex;align-items: center;gap: 5px;">
+                  <RadioButton v-model="trainerType" inputId="ingredient2" name="pizza" value="External" />
+                  <label for="ingredient2" class="ml-2">External</label>
+                </div>
+              </div>
               <div class="row">
                 <label>Trainer Employee ID</label>
                 <AutoComplete v-model="selectedEmpId" multiple optionLabel="NEW_EMP_ID" :suggestions="filteredEmpId" @complete="searchEmployeeId" />
@@ -93,6 +105,8 @@
         <div class="input-preview-data">
           <div class="row">
                   <label>Session Code</label>
+                  <!-- <p>VILT_{{region !== 'Americas'?'CMP':'MX'}}_{{selectedMonth}}_{{Training Name}}_SN{{ classNumber }}</p>
+        -->
                   <InputGroup>
                     <InputGroupAddon>VILT_{{region !== 'Americas'?'CMP':'MX'}}_</InputGroupAddon>
                     <InputText placeholder="Month" v-model="selectedMonth" disabled />
@@ -136,6 +150,7 @@
   export default {
     data() {
       return {
+        trainerType:"Internal",
         selectedEmpName:null,
         filteredName:null,
         headerColumn: [
@@ -608,10 +623,10 @@ this.employessData = extractedData
   }
   
   .input-form-data {
-    width: 40%;
+    width: 60%;
   }
   .input-preview-data{
-    width: 60%;
+    width: 40%;
   }
   @media screen and (max-width: 1024px) {
     /* Your CSS rules for screens up to 1024px wide */

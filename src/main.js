@@ -21,6 +21,8 @@ import router from './router';
 import AutoComplete from 'primevue/autocomplete';
 import Toast from 'primevue/toast';
 import FileUpload from 'primevue/fileupload';
+// import PDFTextExtractor from './components/PDFTextExtractor.vue';
+
 
 
 createApp(App)
@@ -42,5 +44,7 @@ createApp(App)
 .component('AutoComplete',AutoComplete)
 .component('FileUpload',FileUpload)
 .component('Toast',Toast)
+// .component('PDFTextExtractor',PDFTextExtractor)
+
 .mount('#app')
 

@@ -1,7 +1,10 @@
 <template>
-  <div>
-    <router-link to="/">Attendance Upload</router-link>     
-    <router-link to="/about">Session Creation</router-link>     
+  <div class="main-app">
+    <div class="main-router-header">
+     <router-link to="/about">Session Creation</router-link>  
+    <router-link to="/">Attendance Upload</router-link>
+    <router-link to="/attendance">Attendance Sheet</router-link>     
+    </div>   
     <router-view></router-view>
     <!-- Your template code here -->
   </div>

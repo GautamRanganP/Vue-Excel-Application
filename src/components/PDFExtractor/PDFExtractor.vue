@@ -74,11 +74,12 @@ export default {
         for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
           const page = await pdf.getPage(pageNum);
           const textContentItems = await page.getTextContent();
-          console.log('text',textContentItems)
           const pageText = textContentItems.items.map(item => item.str).join(' ');
           textContent += `Page ${pageNum}:\n${pageText}\n\n`;
         }
         this.$emit('metaDataFromPdf',metadata.info.CreationDate)
+        console.log('textitems',textContentItems)
+                console.log('text',textContent)
         console.log("meta",metadata)
         this.pdfData = { textContent, metadata };
       } catch (error) {

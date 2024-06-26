@@ -79,7 +79,7 @@ export default {
           textContent += `Page ${pageNum}:\n${pageText}\n\n`;
         }
         this.$emit('metaDataFromPdf',metadata.info.CreationDate)
-        console.log("meta",metadata.info.CreationDate)
+        console.log("meta",metadata)
         this.pdfData = { textContent, metadata };
       } catch (error) {
         console.error('Error loading PDF:', error);

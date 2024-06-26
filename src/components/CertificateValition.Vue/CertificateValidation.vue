@@ -13,8 +13,12 @@
         <InputText type="text" v-model="empEmail" class="grp-input" />
       </div>
         <div class="row">
-          <label>Upload Attendance</label>
+       <label>Completion Date</label>
           <PDFExtractor @metaDataFromPdf= "handleDate"/>
+        </div>
+         <div class="row">
+          <label>Certification Name</label>
+   <InputText type="text" v-model="certName" class="grp-input" />
         </div>
         <div class="row">
           <label>Completion Date</label>
@@ -29,8 +33,7 @@
           </span>
           </div>
         </div>
-      
-        <Button label='submit'/>
+        <Button label='submit' />
     </div>
   </template>
   
@@ -41,6 +44,7 @@ import PDFExtractor from '../PDFExtractor/PDFExtractor.vue';
 export default {
   data(){
     return{
+      certName:'',
       empName:'',
       empId:'',
       empEmail:'',

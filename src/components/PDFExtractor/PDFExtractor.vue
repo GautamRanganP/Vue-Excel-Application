@@ -78,7 +78,7 @@ export default {
           const pageText = textContentItems.items.map(item => item.str).join(' ');
           textContent += `Page ${pageNum}:\n${pageText}\n\n`;
         }
-
+console.log("meta",metadata.info.CreationDate)
         this.pdfData = { textContent, metadata };
       } catch (error) {
         console.error('Error loading PDF:', error);

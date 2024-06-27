@@ -36,31 +36,19 @@ export default {
     };
   },
   methods: {
-    azureValidate(text){
-      // Define the regex pattern for the certification name
-      const pattern = /Microsoft Certified: [\w\s]+/;
-      const match = text.match(pattern);
-      if (match) {
-        const certificationName = match[0];
-  
-        this.$emit('certificationName',certificationName)
-        console.log("Certification name:", certificationName);
-      } else {
-        console.log("Certification name not found.");
-      }
-    },
-    extractDate() {
+    extractDate(dateString) {
       // Flexible regex to match dates in the format "Month Day, Year"
       const regex = /(\b\w+\s\d{1,2},\s\d{4}\b)/;
-      const match = this.textInput.match(regex);
+      const match = dateString.match(regex);
       if (match && match[1]) {
-        this.extractedDate = match[1];
+        return match[1];
       } else {
         this.extractedDate = 'No date found';
       }
       console.log('date',this.extractedDate)
     },
     async handleFileUpload(event) {
+      this.$emit('formCertificationReset',"")
       const file = event.target.files[0];
       if (file && file.type === 'application/pdf') {
         const fileReader = new FileReader();
@@ -84,38 +72,36 @@ export default {
 
         // Extract text content from each page
         let textContent = '';
+        let textItems = [];
         for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
           const page = await pdf.getPage(pageNum);
-          const textContentItems = await page.getTextContent();
-          const pageText = textContentItems.items.map(item => item.str).join(' ');
-           console.log('textitems',textContentItems)
+          textItems = await page.getTextContent();
+          const pageText = textItems.items.map(item => item.str).join(' ');
+           console.log('textitems',textItems)
           textContent += `Page ${pageNum}:\n${pageText}\n\n`;
         }
-        this.$emit('metaDataFromPdf',metadata.info.CreationDate)
-                console.log('text',textContent)
+       
+        //  this.$emit('metaDataFromPdf',this.extractDate(textItems.items[4].str))
+        console.log('text',textContent)
         console.log("meta",metadata)
         this.pdfData = { textContent, metadata };
+        if(textItems&& textItems.items && textItems.items[4].str.includes('Microsoft')){
+          this.$emit('certificationName',textItems.items[4].str)
+          this.$emit('metaDataFromPdf',textItems.items[19].str)
+        }
+        else if(textItems&& textItems.items && textItems.items[2].str.includes('AWS')){
+          this.$emit('certificationName',textItems.items[2].str)
+          this.$emit('metaDataFromPdf',textItems.items[4].str)
+        }
+        else{
+          this.$emit('metaDataFromPdf',metadata.info.CreationDate)
+        }
       } catch (error) {
         console.error('Error loading PDF:', error);
       }
     }
   },
   computed:{
-    creationDate(timestamp){
-// const timestamp = "D:20231113075823+00'00'";
-
-// Extract the date portion from the string
-const dateStr = timestamp.substring(2, 10);
-
-// Parse the date string into a Date object
-const year = dateStr.substring(0, 4);
-const month = dateStr.substring(4, 6);
-const day = dateStr.substring(6, 8);
-
-// Format the date in DD/MM/YYYY format
-const formattedDate = `${day}/${month}/${year}`;
-    return formattedDate
-    }
   }
 };
 </script>

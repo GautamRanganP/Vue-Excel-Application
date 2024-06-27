@@ -14,11 +14,11 @@
       </div>
         <div class="row">
        <label>Completion Date</label>
-          <PDFExtractor @metaDataFromPdf= "handleDate" @certificationName="handleCertificate"/>
+          <PDFExtractor @metaDataFromPdf= "handleDate" @certificationName="handleCertificate" @formCertificationReset= "handleReset"/>
         </div>
          <div class="row">
           <label>Certification Name</label>
-   <InputText type="text" v-model="certName" class="grp-input" />
+          <InputText type="text" v-model="certName" class="grp-input" />
         </div>
         <div class="row">
           <label>Completion Date</label>
@@ -40,7 +40,7 @@
   
 <script>
 import PDFExtractor from '../PDFExtractor/PDFExtractor.vue';
-  import moment from 'moment';
+import moment from 'moment';
 export default {
   data(){
     return{
@@ -90,18 +90,36 @@ export default {
         const month = dateStr.substring(4, 6);
         const day = dateStr.substring(6, 8);
         // const formattedDate = `${day}/${month}/${year}`;
-        const stringDate = `${month}/${day}/${year}`;     
+        const stringDate = `${month}/${day}/${year}`;   
+        console.log("date",stringDate)  
         const formattedDate = moment(stringDate,'MM/DD/YYYY');
         const parsedDate = formattedDate.toDate();
         return parsedDate;
       },
       handleDate(timestamp){
-        this.creationDate = this.formattedCreationDate(timestamp)
+       // this.creationDate = this.formattedCreationDate(timestamp)
+        this.creationDate = this.handleEarnedDate(timestamp)
       },
       handleCertificate(name){
+        console.log('name',name)
         this.certName = name
+      },
+      handleEarnedDate(dateString) { 
+        const date = new Date(dateString); 
+        const month = (date.getMonth() + 1).toString().padStart(2, '0'); 
+        const day = date.getDate().toString().padStart(2, '0'); 
+        const year = date.getFullYear(); 
+        const stringDate = `${month}/${day}/${year}`
+        const formattedDate = moment(stringDate,'MM/DD/YYYY');
+        const parsedDate = formattedDate.toDate();
+        return parsedDate;
+      },
+      handleReset(){
+        this.certName = '';
+        this.creationDate = null;
       }
-    }
+      
+      }
 };
 </script>
   <style>

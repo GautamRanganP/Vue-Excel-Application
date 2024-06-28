@@ -87,8 +87,8 @@ export default {
         this.pdfData = { textContent, metadata };
         const regex1 = /\b([A-Za-z]+ \d{1,2}, \d{4})\b/;
         const regex2 = /\b([A-Za-z]+ \d{1,2},\d{4})\b/;
-        const match = result.data.text.match(regex1);
-        const match1 = result.data.text.match(regex2);
+        const match = textContent.match(regex1);
+        const match1 = textContent.match(regex2);
         if(textItems&& textItems.items && textItems.items[4].str.includes('Microsoft')){
           this.$emit('certificationName',textItems.items[4].str)
           this.$emit('metaDataFromPdf',textItems.items[19].str)

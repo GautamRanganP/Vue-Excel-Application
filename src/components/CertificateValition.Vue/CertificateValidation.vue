@@ -32,7 +32,7 @@
           <div style="display:flex;flex-direction:column">
           <Calendar v-model="completionDate" class="grp-input"/>
           <span class="date-error" style="color:red;font-size:14px" v-if="warningMsg">
-            Certification Completion Date and the Date you have entered doesn't Match 
+            Completion Date doesn't Match 
           </span>
           </div>
         </div>

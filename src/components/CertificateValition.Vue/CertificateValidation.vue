@@ -1,8 +1,8 @@
 <template>
-    <div class="certification-form-container">
-     <div class="row">
-      <h3>Hexavarsity Form</h3>
-        </div>
+    <div class="hexa-form">
+      <div class="row" style="margin-bottom: 20px;">
+          <h2 style="text-align: center;width: 100%">Certification Form</h2>
+      </div>
       <div class="row">
         <label>Name</label>
         <InputText type="text" v-model="empName" class="grp-input" />
@@ -24,19 +24,21 @@
           <InputText type="text" v-model="certName" class="grp-input" />
         </div>
         <div class="row">
-          <label>Completion Date</label>
+          <label>Issued Date</label>
           <Calendar class="grp-input" v-model="creationDate" disabled/>
         </div>
         <div class="row">
-          <label>User Completion Date</label>
+          <label>Completion Date</label>
           <div style="display:flex;flex-direction:column">
           <Calendar v-model="completionDate" class="grp-input"/>
           <span class="date-error" style="color:red;font-size:14px" v-if="warningMsg">
-            Certification Completion Date and the Date you have entered doesn't Match 
+            Completion Date doesn't Match 
           </span>
           </div>
         </div>
-        <Button label='submit' class="form-button" />
+        <div class="hexa-button">
+        <Button label='submit'/>
+      </div>
     </div>
   </template>
   
@@ -125,26 +127,19 @@ export default {
       }
 };
 </script>
-  <style>
-  .certification-form-container{
-    display:flex;
-    flex-direction:column;
-    width:600px;
-    padding:40px;
-    background-color:white;
-    align-items:center;
-  }
-  body{
-    background-color:skyblue;
-  }
-  .form-button{
-    max-width:150px;
-    align-self:flex-end;
-    margin-right:10px;
-  }
+  <style scoped>
+  
+  .row {
+    margin: 15px 0px !important;
 
-  .grp-input{
-    min-width:300px !important;
-    max-width:300px !important;
+  }
+  .hexa-form{
+    padding: 20px 40px;
+    background-color: white;
+    color: black;
+  }
+  .hexa-button{
+    width:100%;
+   text-align: right;
   }
   </style>

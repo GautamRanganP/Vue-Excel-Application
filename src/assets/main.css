@@ -7,8 +7,8 @@
   font-weight: normal;
 } */
 #app{
+  background-color: skyblue ;
   width: 100%;
-  padding: 2rem;
 }
 .main-router-header{
   display: flex;
@@ -16,9 +16,14 @@
   justify-content: center;
 }
 .main-app{
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  height: 100%;
+  justify-content: center;
+  width: 100%;
+  padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
 a,
 .green {

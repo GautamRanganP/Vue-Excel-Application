@@ -1,5 +1,8 @@
 <template>
-    <div>
+    <div class="hexa-form">
+      <div class="row" style="margin-bottom: 20px;">
+          <h2 style="text-align: center;width: 100%">Certification Form</h2>
+      </div>
       <div class="row">
         <label>Name</label>
         <InputText type="text" v-model="empName" class="grp-input" />
@@ -21,11 +24,11 @@
           <InputText type="text" v-model="certName" class="grp-input" />
         </div>
         <div class="row">
-          <label>Completion Date</label>
+          <label>Issued Date</label>
           <Calendar class="grp-input" v-model="creationDate" disabled/>
         </div>
         <div class="row">
-          <label>User Completion Date</label>
+          <label>Completion Date</label>
           <div style="display:flex;flex-direction:column">
           <Calendar v-model="completionDate" class="grp-input"/>
           <span class="date-error" style="color:red;font-size:14px" v-if="warningMsg">
@@ -33,7 +36,9 @@
           </span>
           </div>
         </div>
-        <Button label='submit' />
+        <div class="hexa-button">
+        <Button label='submit'/>
+      </div>
     </div>
   </template>
   
@@ -122,6 +127,19 @@ export default {
       }
 };
 </script>
-  <style>
+  <style scoped>
   
+  .row {
+    margin: 15px 0px !important;
+
+  }
+  .hexa-form{
+    padding: 20px 40px;
+    background-color: white;
+    color: black;
+  }
+  .hexa-button{
+    width:100%;
+   text-align: right;
+  }
   </style>

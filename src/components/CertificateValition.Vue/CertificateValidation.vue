@@ -1,5 +1,8 @@
 <template>
-    <div>
+    <div class="certification-form-container">
+     <div class="row">
+      <h3>Hexavarsity Form</h3>
+        </div>
       <div class="row">
         <label>Name</label>
         <InputText type="text" v-model="empName" class="grp-input" />
@@ -33,7 +36,7 @@
           </span>
           </div>
         </div>
-        <Button label='submit' />
+        <Button label='submit' class="form-button" />
     </div>
   </template>
   
@@ -123,5 +126,25 @@ export default {
 };
 </script>
   <style>
-  
+  .certification-form-container{
+    display:flex;
+    flex-direction:column;
+    width:600px;
+    padding:40px;
+    background-color:white;
+    align-items:center;
+  }
+  body{
+    background-color:skyblue;
+  }
+  .form-button{
+    max-width:150px;
+    align-self:flex-end;
+    margin-right:10px;
+  }
+
+  .grp-input{
+    min-width:300px !important;
+    max-width:300px !important;
+  }
   </style>

@@ -89,22 +89,26 @@ export default {
         const regex2 = /\b([A-Za-z]+ \d{1,2},\d{4})\b/;
         const match = textContent.match(regex1);
         const match1 = textContent.match(regex2);
-        if(textItems&& textItems.items && textItems.items[4].str.includes('Microsoft')){
-          this.$emit('certificationName',textItems.items[4].str)
-          this.$emit('metaDataFromPdf',textItems.items[19].str)
-        }
-        else if(textItems&& textItems.items && textItems.items[2].str.includes('AWS')){
-          this.$emit('certificationName',textItems.items[2].str)
-          this.$emit('metaDataFromPdf',textItems.items[4].str)
-        }
-        else if(match && match[0]){
+        if(match && match[0]){
+          console.log("regex1")
           this.$emit('metaDataFromPdf',match[0])
         }
         else if(match1 && match1[0]){
+          console.log("regex2")
           this.$emit('metaDataFromPdf',match1[0])
         }
+        else if(textItems&& textItems.items &&textItems.items.length!==0&& textItems.items[4].str.includes('Microsoft')){
+          this.$emit('certificationName',textItems.items[4].str)
+          this.$emit('metaDataFromPdf',textItems.items[19].str)
+        }
+        else if(textItems&& textItems.items &&textItems.items.length!==0&& textItems.items[2].str.includes('AWS')){
+          this.$emit('certificationName',textItems.items[2].str)
+          this.$emit('metaDataFromPdf',textItems.items[4].str)
+        }
         else{
-          this.$emit('metaDataFromPdf',metadata.info.CreationDate)
+          console.log("creationdate",metadata.info.CreationDate)
+          // this.$emit('textExtractDate',metadata.info.CreationDate)
+         this.$emit('validationError','')
         }
       } catch (error) {
         console.error('Error loading PDF:', error);

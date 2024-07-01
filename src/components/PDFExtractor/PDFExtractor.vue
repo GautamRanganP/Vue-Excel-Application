@@ -97,14 +97,15 @@ export default {
           console.log("regex2")
           this.$emit('metaDataFromPdf',match1[0])
         }
-        else if(textItems&& textItems.items &&textItems.items.length!==0&& textItems.items[4].str.includes('Microsoft')){
-          this.$emit('certificationName',textItems.items[4].str)
-          this.$emit('metaDataFromPdf',textItems.items[19].str)
-        }
-        else if(textItems&& textItems.items &&textItems.items.length!==0&& textItems.items[2].str.includes('AWS')){
-          this.$emit('certificationName',textItems.items[2].str)
-          this.$emit('metaDataFromPdf',textItems.items[4].str)
-        }
+        // else if(textItems&& textItems.items &&textItems.items.length!==0&& textItems.items[4].str.includes('Microsoft')){
+        //   console.log("Azure")
+        //  this.$emit('certificationName',textItems.items[4].str)
+        //   this.$emit('metaDataFromPdf',textItems.items[19].str)
+        // }
+        // else if(textItems&& textItems.items &&textItems.items.length!==0&& textItems.items[2].str.includes('AWS')){
+        //   this.$emit('certificationName',textItems.items[2].str)
+        //   this.$emit('metaDataFromPdf',textItems.items[4].str)
+        // }
         else{
           console.log("creationdate",metadata.info.CreationDate)
           // this.$emit('textExtractDate',metadata.info.CreationDate)

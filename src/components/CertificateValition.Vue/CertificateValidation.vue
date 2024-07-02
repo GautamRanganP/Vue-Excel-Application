@@ -57,13 +57,13 @@
 <script>
 import PDFExtractor from '../PDFExtractor/PDFExtractor.vue';
 import moment from 'moment';
-import employeeData from './data.json'
+// import employeeData from './data.json'
 export default {
   data(){
     return{
       selectedEmpId:null,
       filteredEmpId:[],
-      employessData:employeeData,
+      // employessData:employeeData,
       certName:'',
       empName:'',
       empId:'',

@@ -6,11 +6,11 @@
                 <div class="row">
                   <label>Employee Number</label>
                   <div style="display: flex;flex-direction: column;padding-right: 10px;">
-                    <label>Attended</label>
+                  <label>Attended <Badge severity="info">{{employeeIdsOfAttended.length}}</Badge></label>
                     <Textarea v-model="attended" autoResize rows="5" cols="15" />
                   </div>
                   <div style="display: flex;flex-direction: column;">
-                    <label>Not Attended</label>
+                    <label>Not Attended <Badge severity="info">{{employeeIdsOfNotAttended.length}}</Badge></label>
                     <Textarea v-model="notAttended" autoResize rows="5" cols="15" />
                   </div>
                 </div>
@@ -138,7 +138,7 @@
         attended: '',
         notAttended: '',
         employeeIdsOfAttended: [],
-        employeeIdsOfNotAttended: []
+        employeeIdsOfNotAttended: [],
   
         // Your reactive data properties here
       };
@@ -272,6 +272,11 @@
     // Other options like 'created', 'mounted', etc. can be defined here
   };
   </script>
+  <style scoped>
+  label{
+    margin-bottom:5px
+  }
+  </style>
   <style>
   .row>label {
     display: inline-block;

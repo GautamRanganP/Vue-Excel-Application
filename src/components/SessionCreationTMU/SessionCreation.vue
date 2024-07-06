@@ -86,13 +86,13 @@
                 </div>
               </div>
               <div class="row">
-                <label>Trainer Employee ID</label>
+                <label>Trainer ID</label>
                 <AutoComplete v-model="selectedEmpId" multiple optionLabel="NEW_EMP_ID" :suggestions="filteredEmpId" @complete="searchEmployeeId" />
 
                 <!-- <InputText type="text" v-model="trainerEmpId" /> -->
               </div>
               <div class="row">
-                <label>Trainer Employee Name</label>
+                <label>Trainer Name</label>
                 <AutoComplete v-model="selectedEmpName" multiple optionLabel="NAME" :suggestions="filteredName" @complete="searchEmployeeName" />
                 <!-- <InputText type="text" v-model="trainerEmpId" /> -->
               </div>
@@ -625,7 +625,9 @@ URL.revokeObjectURL(url);
     display: inline-block;
     width: 135px;
   }
-  
+  label{
+    color:black;
+  }
   .row {
     margin: 15px 0px;
     display: flex;
@@ -633,7 +635,9 @@ URL.revokeObjectURL(url);
   }
   
   .input-form-data {
+    background-color: white;
     width: 60%;
+    padding: 20px;
   }
   .input-preview-data{
     width: 40%;

@@ -8,8 +8,7 @@
 } */
 
 #app{
-  background: linear-gradient(90deg, #1f005c, #5b0060, #870160, #ac255e, #ca485c, #e16b5c, #f39060, #ffb56b);
-  /* background-color: skyblue ; */
+  background-image: linear-gradient(to bottom right, #00C0FF, #4218B8); ;
   width: 100%;
 }
 .main-router-header{

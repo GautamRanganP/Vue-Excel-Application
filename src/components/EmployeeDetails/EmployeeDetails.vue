@@ -22,22 +22,24 @@ export default {
     }
   },
   mounted(){
-     const response = fetch('http://localhost:3000/getallemployee', 
+     const response = fetch('https://e-commere-back-end.vercel.app/getallemployee', 
       {  
         method: 'GET', // or 'PUT'
-        headers: {       'Content-Type': 'application/json', // Set the Content-Type to application/json   
-                 }, // Convert the data object to a JSON string 
-        })  .then(response => {     if (!response.ok) {       // If the response status code is not OK, throw an error
-        throw new Error('Network response was not ok ' + response.statusText);     }    return response.json(); // Parse the JSON from the response 
-         })  .then(data => { 
+        headers: {       
+          'Content-Type': 'application/json', // Set the Content-Type to application/json   
+          }, // Convert the data object to a JSON string 
+        }).then(response => {     
+          if (!response.ok) {       // If the response status code is not OK, throw an error
+            throw new Error('Network response was not ok ' + response.statusText);     
+          }    
+          return response.json(); // Parse the JSON from the response 
+         }).then(data => { 
           console.log('Success:', data); // Handle the JSON data
-        
-         
           let transformedData = [];
 
-// Iterate through each employee object
-data.forEach(employee => {
-  // Iterate through each certification of the employee
+        // Iterate through each employee object
+        data.forEach(employee => {
+        // Iterate through each certification of the employee
   employee.certifications.forEach(certification => {
     const momentDate = moment(certification.completionDate);     
     const formattedDate = momentDate.format("MM/DD/YYYY");

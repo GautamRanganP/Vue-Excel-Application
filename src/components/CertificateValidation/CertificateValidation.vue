@@ -1,5 +1,9 @@
 <template>
-    <div class="hexa-form">
+<div class="hexa-form" v-if="formSuccess">
+  <h3>Form Submitted Successfully</h3>
+  <button @click="formSuccess = false" >Back to Form</button>
+</div>
+    <div class="hexa-form" v-if="!formSuccess">
       <div class="row" style="margin-bottom: 20px;">
           <h2 style="text-align: center;width: 100%">Certification Form</h2>
       </div>
@@ -7,6 +11,7 @@
           <label>Employee ID</label>
           <!-- <AutoComplete v-model="selectedEmpId" optionLabel="NEW_EMP_ID" :suggestions="filteredEmpId" @complete="searchEmployeeId" />
        -->
+       
        <InputText type="text" v-model="empId" class="grp-input" />
       </div>
       <div class="row">
@@ -28,11 +33,20 @@
        <span class="date-error" style="color:red;font-size:14px" v-if="fileError">
             pls provide valid pdf download
           </span>
+            <!-- <InlineMessage severity="error" v-if="fileError">pls provide valid pdf download</InlineMessage>
+         -->
         </div>
         </div>
          <div class="row">
           <label>Certification Name</label>
+          <div class="column">
           <InputText type="text" v-model="certName" class="grp-input" />
+          <!-- <InlineMessage severity="error" v-if="errorMsg">Certification Already exist </InlineMessage>
+         -->
+          <div class="date-error" style="color:red;font-size:14px" v-if="errorMsg">
+            Certification Already exist 
+          </div>   
+          </div>
         </div>
         <div class="row">
           <label>Issued Date</label>
@@ -48,7 +62,7 @@
           </div>
         </div>
         <div class="hexa-button">
-        <Button label='submit'/>
+        <Button @click="handleSubmit" label='submit'/>
       </div>
     </div>
   </template>
@@ -61,6 +75,8 @@ import moment from 'moment';
 export default {
   data(){
     return{
+      errorMsg:false,
+      formSuccess:false,
       selectedEmpId:null,
       filteredEmpId:[],
       // employessData:employeeData,
@@ -115,6 +131,32 @@ export default {
     }
   },
   methods:{
+     handleSubmit(){
+      const formData = {
+        employeeID : this.empId, 
+        employeeName : this.empName, 
+        employeeEmail : this.empEmail, 
+        certifications : [{
+          name : this.certName,
+          completionDate : this.completionDate
+        }]
+      }
+      const response = fetch('http://localhost:3000/employee', 
+      {  method: 'POST', // or 'PUT'
+      headers: 
+      {       'Content-Type': 'application/json', // Set the Content-Type to application/json   
+       },    body: JSON.stringify(formData), // Convert the data object to a JSON string 
+        })  .then(response => {     if (!response.ok) {       // If the response status code is not OK, throw an error
+        throw new Error('Network response was not ok ' + response.statusText);     }    return response.json(); // Parse the JSON from the response 
+         })  .then(data => { 
+          this.formSuccess = true;
+          console.log('Success:', data); // Handle the JSON data
+          }) .catch(error => { 
+            this.errorMsg = true
+            console.error('Error:', error); // Handle any errors
+           });
+
+     },
      searchEmployeeId(event) {
             setTimeout(() => {
                 if (!event.query.trim().length) {

@@ -22,6 +22,7 @@ import AutoComplete from 'primevue/autocomplete';
 import Toast from 'primevue/toast';
 import FileUpload from 'primevue/fileupload';
 import Badge from 'primevue/badge';
+import InlineMessage from 'primevue/inlinemessage';
 // import PDFTextExtractor from './components/PDFTextExtractor.vue';
 
 
@@ -45,6 +46,7 @@ createApp(App)
 .component('FileUpload',FileUpload)
 .component('Toast',Toast)
 .component('Badge',Badge)
+.component('InlineMessage',InlineMessage)
 // .component('PDFTextExtractor',PDFTextExtractor)
 
 .mount('#app')

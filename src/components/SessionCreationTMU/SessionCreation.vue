@@ -379,16 +379,16 @@ const extractedData = dataRows.map(row => {
   return rowData;
 });
 this.employessData = extractedData
-const jsonString = JSON.stringify(extractedData); // Create a Blob from the JSON string
-const blob = new Blob([jsonString], { type: "application/json" }); // Create a URL for the Blob
-const url = URL.createObjectURL(blob); // Create an anchor element and set the download attribute
-const a = document.createElement('a'); 
-a.href = url; 
-a.download = 'data.json'; // Append the anchor element to the document body and simulate a click
-document.body.appendChild(a); 
-a.click(); // Clean up by removing the anchor element and revoking the Blob URL
-document.body.removeChild(a);
-URL.revokeObjectURL(url);
+// const jsonString = JSON.stringify(extractedData); // Create a Blob from the JSON string
+// const blob = new Blob([jsonString], { type: "application/json" }); // Create a URL for the Blob
+// const url = URL.createObjectURL(blob); // Create an anchor element and set the download attribute
+// const a = document.createElement('a'); 
+// a.href = url; 
+// a.download = 'data.json'; // Append the anchor element to the document body and simulate a click
+// document.body.appendChild(a); 
+// a.click(); // Clean up by removing the anchor element and revoking the Blob URL
+// document.body.removeChild(a);
+// URL.revokeObjectURL(url);
       console.log("data",extractedData);
       },
       async exportToExcel() {    

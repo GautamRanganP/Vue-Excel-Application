@@ -129,7 +129,8 @@
                 <!-- <DataTable :value="selectedEmpId">
                   <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header"></Column>
                 </DataTable> -->
-                 <Textarea v-model="trainingImportData" autoResize rows="5" cols="15" />
+                 <!-- <Textarea v-model="trainingImportData" autoResize rows="5" cols="15" />
+         -->
         </div>
   
   

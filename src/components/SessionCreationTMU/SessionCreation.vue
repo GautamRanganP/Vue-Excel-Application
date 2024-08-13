@@ -32,7 +32,7 @@
                 </div>
                 <div style="display: flex;align-items: center;gap: 5px;">
                   <RadioButton v-model="trainingDescrition" inputId="description3" name="description" value="Behavioral" />
-                  <label for="description3" class="ml-2">Behavioral</label>
+                  <label for="description3" style="margin-right: 10px;" class="ml-2">Behavioral</label>
                 </div>
                 <div style="display: flex;align-items: center;gap: 5px;">
                   <RadioButton v-model="trainingDescrition" inputId="description4" name="description" value="Process" />
@@ -85,13 +85,13 @@
                   <label for="ingredient2" class="ml-2">External</label>
                 </div>
               </div>
-              <div class="row">
+              <!-- <div class="row">
                 <label>Trainer ID</label>
                 <AutoComplete v-model="selectedEmpId" multiple optionLabel="NEW_EMP_ID" :suggestions="filteredEmpId" @complete="searchEmployeeId" />
 
-                <!-- <InputText type="text" v-model="trainerEmpId" /> -->
-              </div>
-              <div class="row">
+                 <InputText type="text" v-model="trainerEmpId" />
+              </div> -->
+              <div class="row" v-if='trainerType === "Internal"'>
                 <label>Trainer Name</label>
                 <AutoComplete v-model="selectedEmpName" multiple optionLabel="NAME" :suggestions="filteredName" @complete="searchEmployeeName" />
                 <!-- <InputText type="text" v-model="trainerEmpId" /> -->
@@ -126,9 +126,10 @@
                   </InputGroup>
                   <!-- <InputText type="text" v-model="classCode" /> -->
                 </div>
-                <DataTable :value="selectedEmpId">
+                <!-- <DataTable :value="selectedEmpId">
                   <Column v-for="col of columns" :key="col.field" :field="col.field" :header="col.header"></Column>
-                </DataTable>
+                </DataTable> -->
+                 <Textarea v-model="trainingImportData" autoResize rows="5" cols="15" />
         </div>
   
   
@@ -150,6 +151,7 @@
   export default {
     data() {
       return {
+        trainingImportData:null,
         trainerType:"Internal",
         selectedEmpName:null,
         filteredName:null,
@@ -292,7 +294,7 @@
         selectedEmpId:null,
         trainerEmpId:null,
         months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
-        competencyDev: ["BIBA","IMS"],
+        competencyDev: ["BIBA","IMS","ATM","DA"],
         selectedMonth:null,
         employeeNo: '63863',
         trainingName: null,
@@ -517,7 +519,7 @@ this.employessData = extractedData
               case "Contribute to parent activity": 
               return { [header]: 1 } 
               case "Instructor": 
-              return { [header]: this.selectedEmpName[0]['EMP ID'] }; 
+              return { [header]: this.selectedEmpName && this.selectedEmpName.length > 0 ? this.selectedEmpName[0]['EMP ID'] : '' }; 
               default: 
               return { [header]: '' };
           } 

@@ -23,6 +23,7 @@ import Toast from 'primevue/toast';
 import FileUpload from 'primevue/fileupload';
 import Badge from 'primevue/badge';
 import InlineMessage from 'primevue/inlinemessage';
+import Card from 'primevue/card';
 // import PDFTextExtractor from './components/PDFTextExtractor.vue';
 
 
@@ -47,6 +48,7 @@ createApp(App)
 .component('Toast',Toast)
 .component('Badge',Badge)
 .component('InlineMessage',InlineMessage)
+.component('Card',Card)
 // .component('PDFTextExtractor',PDFTextExtractor)
 
 .mount('#app')

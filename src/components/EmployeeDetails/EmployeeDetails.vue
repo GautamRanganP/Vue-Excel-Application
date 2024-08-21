@@ -1,5 +1,5 @@
 <template>
-
+<div>
 <h1 style="color:white">Employee</h1>
 <DataTable :value="employeeData" tableStyle="min-width: 50rem">
     <Column field="employeeID" header="employeeID"></Column>
@@ -8,17 +8,52 @@
     <Column field="certificationName" header="certificationName"></Column>
     <Column field="completionDate" header="completionDate"></Column>
 </DataTable>
-
+</div>
 </template>
   
   
 <script>
+import Chart from 'primevue/chart';
 import moment from 'moment';
 // import employeeData from './data.json'
 export default {
+    components: {
+    Chart
+  },
   data(){
     return{
         employeeData:null,
+        chartData: {
+      labels: ['Azure Certification', 'AWS Certification', 'Other Certification'],
+      datasets: [
+        {
+          label: 'Monthly Completion',
+          backgroundColor: '#42A5F5',
+          borderColor: '#1E88E5',
+          data: [40, 55, 75, 60, 80, 90, 100],
+          fill: false
+        },
+        {
+          label: 'Monthly Expenses',
+          backgroundColor: '#FF6384',
+          borderColor: '#FF6384',
+          data: [30, 45, 65, 50, 70, 85, 95],
+          fill: false
+        }
+      ]
+    },
+    chartOptions: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          beginAtZero: true
+        },
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
     }
   },
   mounted(){

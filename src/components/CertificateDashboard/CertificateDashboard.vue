@@ -25,19 +25,19 @@
     <Chart type="bar" :data="chartData" :options="chartOptions" style="flex:1;background-color:white;" />
    
    <Card style="flex:1;">
-      <template #title><div class="grp-dashboard-card">Total Certification</div></template>
+      <template #title><div class="grp-dashboard-card">Leaderboard</div></template>
       <template #content>
-      <Card style="flex:1;">
+      <Card style = "margin-bottom: 10px;">
+        <template #title><p>104</p></template>
+        <template #content>
+      </template>
+      </Card>
+      <Card style = "margin-bottom: 10px;">
         <template #title><p>104</p></template>
       <template #content>
       </template>
       </Card>
-      <Card style="flex:1;">
-        <template #title><p>104</p></template>
-      <template #content>
-      </template>
-      </Card>
-      <Card style="flex:1;width:150px;height:150px">
+      <Card >
         <template #title><p>104</p></template>
       <template #content>
       </template>
@@ -47,7 +47,7 @@
     </Card>
   </div>
   <div style="margin-top:20px;display:flex;gap:20px;max-height:400px">  
-    <Chart type="bar" :data="chartData" :options="chartOptions" style="flex:1;background-color:white;" />
+    <Chart type="doughnut" :data="chartData" :options="chartOptions1" style="flex:1;background-color:white;" />
     <Chart type="line" :data="chartData" :options="chartOptions1" style="flex:1;background-color:white;" />
   </div>
 

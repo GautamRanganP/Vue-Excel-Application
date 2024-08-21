@@ -1,6 +1,9 @@
 <template>
 <div>
-<h1 style="color:white">Employee</h1>
+<div style="display:flex;flex-direction: column;align-items: center;gap:10px">
+  <h1 style="color:white">Employee Certification Completion Details</h1>
+  <Button style="margin-bottom:10px" v-if="employeeData && employeeData.length > 0" @click="exportToExcel(employeeData)">Export Report</Button>
+</div>
 <DataTable :value="employeeData" tableStyle="min-width: 50rem">
     <Column field="employeeID" header="employeeID"></Column>
     <Column field="employeeName" header="employeeName"></Column>
@@ -15,6 +18,8 @@
 <script>
 import Chart from 'primevue/chart';
 import moment from 'moment';
+  
+  import ExcelJS from 'exceljs'
 // import employeeData from './data.json'
 export default {
     components: {
@@ -22,7 +27,7 @@ export default {
   },
   data(){
     return{
-        employeeData:null,
+        employeeData:[],
         chartData: {
       labels: ['Azure Certification', 'AWS Certification', 'Other Certification'],
       datasets: [
@@ -55,6 +60,37 @@ export default {
       }
     }
     }
+  },
+  methods:{
+    async exportToExcel(data){
+      console.log("working")
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Employees');
+
+    // Define the columns
+    worksheet.columns = [
+        { header: 'Employee ID', key: 'employeeID', width: 15 },
+        { header: 'Employee Name', key: 'employeeName', width: 30 },
+        { header: 'Employee Email', key: 'employeeEmail', width: 30 },
+        { header: 'Certification Name', key: 'certificationName', width: 25 },
+        { header: 'Completion Date', key: 'completionDate', width: 15 }
+    ];
+
+    // Add rows to the worksheet
+    worksheet.addRows(data);
+
+    // Write the workbook to a file
+    const buffer = await workbook.xlsx.writeBuffer();
+    
+    // Create a Blob object from the buffer
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+    // Create a link element to trigger the download
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'employee_data.xlsx';
+    link.click();
+}
   },
   mounted(){
      const response = fetch('https://e-commere-back-end.vercel.app/getallemployee', 

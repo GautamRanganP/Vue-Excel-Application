@@ -6,6 +6,7 @@ import CertificateValidation from './components/CertificateValidation/Certificat
 import EmployeeDetails from './components/EmployeeDetails/EmployeeDetails.vue'
 import CertificationDashboard from './components/CertificateDashboard/CertificateDashboard.vue'
 import AttendanceReport from './components/AttendanceReport/AttendanceReport.vue'
+import Checker from './components/ExternalCertificate/Checker.vue'
 
 const routes = [
   { path: '/', component: AttendanceUpload },
@@ -13,7 +14,8 @@ const routes = [
   { path: '/certificationValidator', component: CertificateValidation },
   { path: '/employee', component:EmployeeDetails  },
   { path: '/dashboard', component:CertificationDashboard },
-  { path: '/report', component: AttendanceReport }
+  { path: '/report', component: AttendanceReport },
+  { path: '/checker', component: Checker}
 ]
  
 const router = createRouter({

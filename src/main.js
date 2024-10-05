@@ -24,6 +24,7 @@ import FileUpload from 'primevue/fileupload';
 import Badge from 'primevue/badge';
 import InlineMessage from 'primevue/inlinemessage';
 import Card from 'primevue/card';
+import Dialog from 'primevue/dialog';
 // import PDFTextExtractor from './components/PDFTextExtractor.vue';
 
 
@@ -49,6 +50,7 @@ createApp(App)
 .component('Badge',Badge)
 .component('InlineMessage',InlineMessage)
 .component('Card',Card)
+.component('Dialog',Dialog)
 // .component('PDFTextExtractor',PDFTextExtractor)
 
 .mount('#app')

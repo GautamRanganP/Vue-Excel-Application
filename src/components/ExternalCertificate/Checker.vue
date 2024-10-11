@@ -73,9 +73,18 @@ export default {
       )
       let parsedData = JSON.parse(filtered)
       let employeeCertificationDetails = []
+      let certificationNameIndex;
+      let empIdIndex;
+      certificationNameIndex = parsedData[0].findIndex((header)=>{
+          return header.includes("Certification Name")
+      })
+          empIdIndex = parsedData.findIndex((header)=>{
+          return header.includes("Emp Id")
+          })
+        
       parsedData.map((data, index) => {
         if (index !== 0) {
-          const employee = { employeeId: data[0], certificationName: data[6] }
+          const employee = { employeeId: data[empIdIndex], certificationName: data[certificationNameIndex] }
           employeeCertificationDetails.push(employee)
         }
       })
@@ -102,12 +111,49 @@ export default {
       )
       let parsedData2 = JSON.parse(filtered2)
       let employeeCertificationDetails2 = []
-      parsedData2.map((data, index) => {
-        if (index !== 0) {
-          const employee = { employeeId: data[1],employeeName: data[3],employeeOwningUnit:data[13],externalCertificationCategory:data[21],tsrLearningPlan:data[26],tsrUnit:data[29],certificationName: data[19] ,completionDate: data[25],Horizon:data[20] }
-          employeeCertificationDetails2.push(employee)
-        }
+      console.log('parsedData',parsedData2[0])
+      let tsrUnitIndex;
+        let tsrLearningPlanIndex;
+        let completionDateIndex;
+        let empIdIndex1; 
+        let empNameIndex;
+        let empOwnUnitIndex;
+        let externalCertificationIndex;
+        let externalCategoryIndex;
+        let externalquadrantIndex;
+        tsrUnitIndex = parsedData2[0].findIndex((header)=>{
+          return header.includes("TSR UNIT")
       })
+          tsrLearningPlanIndex = parsedData2[0].findIndex((header)=>{
+            return header.includes("TSR Learning Plan Name")
+          })
+          completionDateIndex = parsedData2[0].findIndex((header)=>{
+            return header.includes("External Certification Completion Date")
+          })
+          empIdIndex1 = parsedData2[0].findIndex((header)=>{
+            return header.includes("Employee ID")
+          })
+          empNameIndex = parsedData2[0].findIndex((header)=>{
+            return header.includes("Employee Name")
+          })
+          empOwnUnitIndex = parsedData2[0].findIndex((header)=>{
+            return header.includes("Employee Owning Unit")
+          })
+          externalCertificationIndex = parsedData2[0].findIndex((header)=>{
+            return header.includes("External Certification Name")
+          })
+          externalCategoryIndex = parsedData2[0].findIndex((header)=>{
+            return header.includes("External Certification Category")
+          })
+          externalquadrantIndex = parsedData2[0].findIndex((header)=>{
+            return header.includes("External Certification Quadrant")
+          })
+         parsedData2.map((data, index) => {
+            if (index !== 0) {
+              const employee = { employeeId: data[empIdIndex1],employeeName: data[empNameIndex],employeeOwningUnit:data[empOwnUnitIndex],externalCertificationCategory:data[externalCategoryIndex],tsrLearningPlan:data[tsrLearningPlanIndex],tsrUnit:data[tsrUnitIndex],certificationName: data[externalCertificationIndex] ,completionDate: data[completionDateIndex],Horizon:data[externalquadrantIndex] }
+              employeeCertificationDetails2.push(employee)
+            }
+          })
       console.log('LMS Data', employeeCertificationDetails2)
       console.log(this.findDifferences(employeeCertificationDetails,employeeCertificationDetails2))
      // this.exportToExcel(this.findDifferences(employeeCertificationDetails,employeeCertificationDetails2))
@@ -161,7 +207,7 @@ export default {
       // const header = ['EmployeeID','Employee Name','Employee Owning Unit','External Certification Category','TSR Learning Plan Name','TSR UNIT','External Certification','Completion Date','Horizon','AWE points','Status']
     
       const header = ['EmployeeID','Employee Name','Employee Owning Unit','External Certification Category','TSR Learning Plan Name','TSR UNIT','External Certification','External Certification Completion Date','Horizon','Status']
-    
+
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('Difference')       
       worksheet.addRow(header);   

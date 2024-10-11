@@ -1,14 +1,36 @@
 <template>
   <Dialog
+    v-model:visible="summaryModal"
+    modal
+    header="Attendance Sheet"
+  >
+     <div class="attendance-preview">
+        <DataTable style="max-height: 300px;overflow: auto;" :value="attendedEmployee" showGridlines tableStyle="min-width: 25rem">
+          <Column field="NEW_EMP_ID" header="NEW_EMP_ID"></Column>
+          <Column field="NAME" header="NAME"></Column>
+           <Column
+            v-for="(training, index) in csvData.trainingParticipant"
+            :key="index"
+            :field="`Attendance.${training.date}`"
+            :header="`${training.date}`"
+          ></Column>
+         </DataTable>
+         <div class="btn-grp" style="justify-content: center;margin-top: 20px;">
+          <Button label="Go Back" @click=" summaryModal = false"/>
+        </div>
+      </div>
+  </Dialog>
+  <Dialog
     v-model:visible="showDialog"
     modal
     header="Missing Employee ID"
     :style="{ width: '25rem' }"
   >
-    <span>Update the information.</span>
+    <span>Update the information. {{ missingDate }}</span>
     <div class="form-input-grp">
       <label for="employeeId">Employee ID</label>
-      <InputText id="employeeId" v-model="userInput" autocomplete="off" />
+      <AutoComplete v-model="userInput" optionLabel="NEW_EMP_ID" :suggestions="employeeSuggestion" @complete="search" />
+      <!-- <InputText id="employeeId" v-model="userInput" autocomplete="off" /> -->
     </div>
     <div class="form-input-grp">
       <label for="employeeName">Employee Name</label>
@@ -18,7 +40,7 @@
       <Button label="Submit" @click="submitDialog" />
       <Button label="Cancel" @click="cancelDialog" />
     </div>
-    <div v-if="bestMatch.length > 0" class="grp-data-table">
+    <div v-if="bestMatch && bestMatch.length > 0" class="grp-data-table">
       <h4>Best Match</h4>
       <DataTable :value="bestMatch">
         <Column field="NEW_EMP_ID" header="Code"></Column>
@@ -33,17 +55,18 @@
       </DataTable>
     </div>
   </Dialog>
-  <Card>
+  <div class="card-wrap">
+  <Card v-show="!finalAttendance.length > 0">
     <template #title>
       <div style="font-weight: 600">Attendance Report Generator</div>
     </template>
     <template #content>
-      <form @submit.prevent="handleSubmit1">
+      <form @submit.prevent="handleSubmit" id="attendance-form">
         <div class="attendance-report">
           <label for="teamsAttendance">Teams Attendance</label>
           <input
             type="file"
-            @change="handleTeamUpload"
+            ref="teamsAttendanceFile"
             multiple
             accept=".xlsx, .xls, .csv"
             id="teamsAttendance"
@@ -51,28 +74,59 @@
           <label for="nomination">Nomination</label>
           <input
             type="file"
-            @change="handleNomination"
+            ref = "nominationFile"
             accept=".xlsx, .xls, .csv"
             id="nomination"
           />
+          <label>Minimum Duration to stay</label>
+          <select v-model="selectedOption">
+              <option value = "0" >0 mins</option>
+              <option value = "15">15 mins</option>
+              <option value = "30">30 mins</option>
+              <option value = "30">45 mins</option>
+          </select>
         </div>
+        <span class="error-input-grp" v-if="error">error while extracting teams attendance</span>
+        <span v-if="loader">Extracting...</span>
         <!-- <button type="button" @click="exportExcel">Export</button> -->
-        <div style="display: flex; justify-content: center">
-          <Button style="margin-top: 15px" label="Export" @click="exportExcel" type="button" />
+        <div style="display: flex; justify-content: center;gap: 15px;">
+          <Button v-if="!finalAttendance.length > 0"  style="margin-top: 15px" label="Extract" type="submit" />
+          <!-- <Button v-if="finalAttendance.length > 0" style="margin-top: 15px" label="Export" @click="exportExcel" type="button" /> -->
         </div>
       </form>
     </template>
   </Card>
-  <Card v-if="finalAttendance.length > 0">
+  <Card v-if="finalAttendance.length > 0" class="summary-card-grp">
     <template #title>
       <div style="font-weight: 600">Attendance Summary</div>
     </template>
     <template #content>
-      <div v-if="csvData.trainingName">Training Name : {{ csvData.trainingName }}</div>
-      <div>Nominated : {{ finalAttendance.length }}</div>
-      <div v-if="totalAttended">Attended: {{ totalAttended }}</div>
+      <div v-if="csvData.trainingName"><span>Training Name </span>:<strong> {{ csvData.trainingName }}</strong></div>
+      <div><span>Nominated </span>:<strong> {{ finalAttendance.length }}</strong></div>
+      <div v-if="attendedEmployee.length > 0"><span>Attended </span>:<strong> {{ attendedEmployee.length }}</strong></div>
+      <div v-if="notAttendedEmployee.length > 0"><span>Not Attended </span>:<strong> {{ notAttendedEmployee.length }}</strong></div>
+      <div style="display: flex; justify-content: center;gap: 15px;" @click="toggleSummary" class="attendance-summary-button">
+        <button>Preview Attendance Sheet</button>
+      </div>
+      <!-- <div>
+        <DataTable :value="attendedEmployee">
+          <Column field="NEW_EMP_ID" header="NEW_EMP_ID"></Column>
+          <Column field="NAME" header="NAME"></Column>
+           <Column
+            v-for="(training, index) in csvData.trainingParticipant"
+            :key="index"
+            :field="`Attendance.${training.date}`"
+            :header="`${training.date}`"
+          ></Column>
+         </DataTable>
+      </div> -->
+      <div style="display: flex; justify-content: center;gap: 15px;justify-content: flex-end;">
+          <Button v-if="finalAttendance.length > 0" style="margin-top: 15px" label="Resubmit" @click="resetForm" type="button" />
+          <Button v-if="finalAttendance.length > 0" style="margin-top: 15px" label="Export" @click="exportExcel" type="button" />
+        </div>
     </template>
   </Card>
+</div>
 </template>
 
 <script>
@@ -82,21 +136,60 @@ import moment from 'moment'
 export default {
   data() {
     return {
-      totalAttended:0,
+      csvData: [],
+      finalAttendance: [],
+      employeeSuggestion:[],
       nominationList: [],
-      showDialog: false,
+      attendedEmployee:[],
+      notAttendedEmployee:[],
+      missingDate:'',
       userInput: '',
       employeeName: '',
       employeeId: null,
-      csvData: [],
-      finalAttendance: [],
-      visible: false
+      selectedOption:0,
+      loader:false,
+      error:false,
+      showDialog: false,
+      summaryModal: false,
     }
   },
   methods: {
+    search(event) {
+      setTimeout(() => {
+                if (!event.query.trim().length) {
+                    // this.filteredEmpId = [...this.employessData.NEW_EMP_ID];
+                } else {
+                  const nonReactiveData = Object.assign([], this.nominationList); // Create a non-reactive copy of the data
+                  const filterResults = nonReactiveData.filter((country) => {
+                  return country.NEW_EMP_ID.toString().toLowerCase().startsWith(event.query.toLowerCase());
+                  }).slice(0, 10)
+                  this.employeeSuggestion= filterResults;
+                  console.log("empid",JSON.parse(JSON.stringify(this.employeeSuggestion)))
+                }
+            }, 250);
+        // this.employeeSuggestion = [...Array(10).keys()].map((item) => event.query + '-' + item);
+    },
+    toggleSummary(){
+      this.summaryModal = !this.summaryModal
+    },
+    resetForm(){
+      this.$refs.teamsAttendanceFile.value = ''
+      this.$refs.nominationFile.value = ''
+      this.selectedOption = 0
+      this.finalAttendance = []
+      this.csvData = []
+      this.nominationList = []
+      this.employeeSuggestion = []
+      this.attendedEmployee = []
+      this.notAttendedEmployee = []
+      this.missingDate = ''
+      this.userInput = ''
+      this.employeeName = ''
+      this.employeeId = null
+    },
     async extractFromTeamsAttendance(dataArray) {
       const participants = []
-      console.log(dataArray)
+      console.log("rawAttendance",dataArray)
       let isParticipantSection = false
       for (const item of dataArray) {
         if (item['1. Summary'] === 'Name') {
@@ -108,25 +201,23 @@ export default {
           let missingSet = false
 
           if (item['1. Summary'] !== null) {
-            let condition =
-              this.csvData.trainingParticipant.length > 2
-                ? item.__parsed_extra[3] === null
-                : item['_3'] === null
+            let condition = item.__parsed_extra ? item.__parsed_extra[3] === null || !item.__parsed_extra[3].includes('@hexaware.com') : item['_3'] === null || !item['_3'].includes('@hexaware.com') 
             if (condition) {
               missingSet = true
+              this.missingDate = item.__parsed_extra ? item.__parsed_extra[0].split(',')[0] : item[''].split(',')[0]
               this.employeeName = item['1. Summary']
               await this.openDialog()
                 .then((input) => {
-                  if (this.csvData.trainingParticipant.length > 2) {
+                    if (item.__parsed_extra) {
                     participant = {
                       Name: item['1. Summary'],
                       'First Join': item.__parsed_extra[0],
                       'Last Leave': item.__parsed_extra[1],
                       'In-Meeting Duration': item.__parsed_extra[2],
                       Email: item.__parsed_extra[3],
-                      'Participant ID (UPN)': item.__parsed_extra[4]
+                      'Participant ID (UPN)': item.__parsed_extra[4] && item.__parsed_extra[4].includes('@hexaware.com')
                         ? item.__parsed_extra[4].replace('@hexaware.com', '')
-                        : input,
+                        : typeof input === 'object' ? input.NEW_EMP_ID : input,
                       Role: item.__parsed_extra[5],
                       IdNotPresent: item.__parsed_extra[4] ? true : false
                     }
@@ -137,23 +228,26 @@ export default {
                       'Last Leave': item['_1'],
                       'In-Meeting Duration': item['_2'],
                       Email: item['_3'],
-                      'Participant ID (UPN)': item['_4']
+                      'Participant ID (UPN)': item['_4'] && item['_4'].includes('@hexaware.com')
                         ? item['_4'].replace('@hexaware.com', '')
-                        : input,
+                        : typeof input === 'object' ? input.NEW_EMP_ID : input,
                       Role: item['_5'],
                       IdNotPresent: item['_4'] ? true : false
                     }
                   }
                   participants.push(participant)
                 })
-                .catch((error) => {})
+                .catch((error) => {
+                  this.error =true
+                })
               // empId = prompt("Please Check Employee Id in Nomination", item["1. Summary"]);
             }
             if (missingSet) {
               continue
             }
 
-            if (this.csvData.trainingParticipant.length > 2) {
+            if (item.__parsed_extra) {
+            // if (this.csvData.trainingParticipant.length > 1) {
               participant = {
                 Name: item['1. Summary'],
                 'First Join': item.__parsed_extra[0],
@@ -188,111 +282,113 @@ export default {
       }
       return participants
     },
-    handleTeamUpload(e) {
-      var file = e.target.files
-      const trainingDetails = {
-        trainingName: null,
-        trainingParticipant: [],
-        dateCount: file.length
-      }
-      for (let i = 0; i < file.length; i++) {
-        if (file[i]) {
-          const pattern = /^(.*) - Attendance report (\d{1,2}-\d{1,2}-\d{2})\.csv$/
-          const match = file[i].name.match(pattern)
-          if (match) {
-            if (!trainingDetails.trainingName) trainingDetails.trainingName = match[1]
-            console.log('trainingName', trainingDetails.trainingName)
-          }
+    // handleTeamUpload(e) {
+    //   var file = e.target.files
+    //   const trainingDetails = {
+    //     trainingName: null,
+    //     trainingParticipant: [],
+    //     dateCount: file.length
+    //   }
+    //   for (let i = 0; i < file.length; i++) {
+    //     if (file[i]) {
+    //       const pattern = /^(.*) - Attendance report (\d{1,2}-\d{1,2}-\d{2})\.csv$/
+    //       const match = file[i].name.match(pattern)
+    //       if (match) {
+    //         if (!trainingDetails.trainingName) trainingDetails.trainingName = match[1]
+    //         console.log('trainingName', trainingDetails.trainingName)
+    //       }
 
-          Papa.parse(file[i], {
-            header: true, // Treat the first row as headers
-            dynamicTyping: true, // Automatically converts data types
-            complete: (results) => {
-              trainingDetails.trainingParticipant.push({
-                date: match[2],
-                participants: results.data
-              })
-            }
-          })
-        }
-      }
-      trainingDetails.trainingParticipant.sort((a, b) => {
-        const dateA = new Date(a.date)
-        const dateB = new Date(b.date)
-        return dateA - dateB
-      })
-      this.csvData = trainingDetails
-      console.log("Team attendance Extracted",this.csvData)
-    },
-    async handleNomination(event) {
-      const file = event.target.files[0]
-      if (!file) return
+    //       Papa.parse(file[i], {
+    //         header: true, // Treat the first row as headers
+    //         dynamicTyping: true, // Automatically converts data types
+    //         complete: (results) => {
+    //           trainingDetails.trainingParticipant.push({
+    //             date: match[2],
+    //             participants: results.data
+    //           })
+    //         }
+    //       })
+    //     }
+    //   }
+    //   trainingDetails.trainingParticipant.sort((a, b) => {
+    //     const dateA = new Date(a.date)
+    //     const dateB = new Date(b.date)
+    //     return dateA - dateB
+    //   })
+    //   this.csvData = trainingDetails
+    //   console.log("Team attendance Extracted",this.csvData)
+    // },
+    // async handleNomination(event) {
+    //   const file = event.target.files[0]
+    //   if (!file) return
 
-      const workbook = new ExcelJS.Workbook()
-      await workbook.xlsx.load(await file.arrayBuffer())
+    //   const workbook = new ExcelJS.Workbook()
+    //   await workbook.xlsx.load(await file.arrayBuffer())
 
-      const worksheet = workbook.worksheets[0] // Get the first sheet
-      this.headers = worksheet.getRow(1).values.slice(1) // Get headers
-      this.data = []
-      worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
-        if (rowNumber > 1) {
-          // Skip header row
-          this.data.push(row.values.slice(1))
-        }
-      })
-      let filtered = JSON.stringify(
-        this.data
-          .filter((obj) => {
-            return ![null, undefined, ''].includes(obj)
-          })
-          .filter((el) => {
-            return typeof el != 'object' || Object.keys(el).length > 0
-          })
-      )
-      let nominationData = JSON.parse(filtered)
-      let employees = this.extractDataFromNomination(
-        nominationData,
-        this.csvData.trainingParticipant.length
-      )
-      this.nominationList = employees
-      console.log('Nomination', employees)
-      for (const dateEntry of this.csvData.trainingParticipant) {
-        try {
-          const currentDate = dateEntry.date
-          const dateData = await this.extractFromTeamsAttendance(
-            JSON.parse(JSON.stringify(dateEntry.participants))
-          )
-          console.log('transformedTeamsAttendance', dateData)
-          employees.forEach((employee) => {
-            const employeeData = dateData.find(
-              (data) => Number(data['Participant ID (UPN)']) === employee.NEW_EMP_ID
-            )
-            if (employeeData && employeeData.Role === 'Presenter') {
-              if (!employee.Attendance) {
-                employee.Attendance = {} // Initialize attendance object if not already present
-              }
-              employee.Attendance[currentDate] = 'P'
-              employee.PRESENTCOUNT++
-            } else {
-              if (!employee.Attendance) {
-                employee.Attendance = {} // Initialize attendance object if not already present
-              }
-              employee.Attendance[currentDate] = 'A'
-            }
-          })
-          this.finalAttendance = employees
-          this.totalAttended = employees.reduce((a,b)=>{
-            if((b.PRESENTCOUNT/b.SESSIONCOUNT)*100 >= 50){
-              a+=1
-            }
-            return a
-          },0)
-          console.log('Final Attendance', this.finalAttendance)
-        } catch {
+    //   const worksheet = workbook.worksheets[0] // Get the first sheet
+    //   this.headers = worksheet.getRow(1).values.slice(1) // Get headers
+    //   this.data = []
+    //   worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
+    //     if (rowNumber > 1) {
+    //       // Skip header row
+    //       this.data.push(row.values.slice(1))
+    //     }
+    //   })
+    //   let filtered = JSON.stringify(
+    //     this.data
+    //       .filter((obj) => {
+    //         return ![null, undefined, ''].includes(obj)
+    //       })
+    //       .filter((el) => {
+    //         return typeof el != 'object' || Object.keys(el).length > 0
+    //       })
+    //   )
+    //   let nominationData = JSON.parse(filtered)
+    //   let employees = this.extractDataFromNomination(
+    //     nominationData,
+    //     this.csvData.trainingParticipant.length
+    //   )
+    //   this.nominationList = employees
+    //   this.employeeSuggestion = JSON.parse(JSON.stringify(employees))
+    //   console.log('Nomination', employees)
+    //   console.log('csv', this.csvData.trainingParticipant)
+    //   for (const dateEntry of this.csvData.trainingParticipant) {
+    //     try {
+    //       const currentDate = dateEntry.date
+    //       const dateData = await this.extractFromTeamsAttendance(
+    //         JSON.parse(JSON.stringify(dateEntry.participants))
+    //       )
+    //       console.log('transformedTeamsAttendance', dateData)
+    //       employees.forEach((employee) => {
+    //         const employeeData = dateData.find(
+    //           (data) => Number(data['Participant ID (UPN)']) === employee.NEW_EMP_ID
+    //         )
+    //         if (employeeData && employeeData.Role === 'Presenter') {
+    //           if (!employee.Attendance) {
+    //             employee.Attendance = {} // Initialize attendance object if not already present
+    //           }
+    //           employee.Attendance[currentDate] = 'P'
+    //           employee.PRESENTCOUNT++
+    //         } else {
+    //           if (!employee.Attendance) {
+    //             employee.Attendance = {} // Initialize attendance object if not already present
+    //           }
+    //           employee.Attendance[currentDate] = 'A'
+    //         }
+    //       })
+    //       this.finalAttendance = employees
+    //       this.totalAttended = employees.reduce((a,b)=>{
+    //         if((b.PRESENTCOUNT/b.SESSIONCOUNT)*100 >= 50){
+    //           a+=1
+    //         }
+    //         return a
+    //       },0)
+    //       console.log('Final Attendance', this.finalAttendance)
+    //     } catch {
 
-        }
-      }
-    },
+    //     }
+    //   }
+    // },
     extractDataFromNomination(dataArray, sessionCount) {
       const participants = []
       for (const item of dataArray) {
@@ -306,7 +402,7 @@ export default {
       }
       return participants
     },
-    filterParticipants(data) {
+    async filterParticipants(data,delay) {
       const filteredParticipants = data.filter((participant) => {
         const durationStr = participant['In-Meeting Duration']
         const components = durationStr.split(' ')
@@ -324,7 +420,7 @@ export default {
           }
         }
         totalMinutes = hours * 60 + minutes + seconds / 60
-        return totalMinutes > 20
+        return totalMinutes > delay
       })
       return filteredParticipants
     },
@@ -478,7 +574,7 @@ export default {
       ) // Create a download link
       const downloadLink = document.createElement('a')
       downloadLink.href = blobUrl
-      downloadLink.setAttribute('download', 'Attendance.xlsx') // Simulate a click event on the download link
+      downloadLink.setAttribute('download', `${this.csvData.trainingName} Attendance Report.xlsx`) // Simulate a click event on the download link
       downloadLink.click() // Clean up by revoking the blob URL
       window.URL.revokeObjectURL(blobUrl)
     },
@@ -524,23 +620,184 @@ export default {
       this.userInput = ''
       this.resolveDialog = null
       this.rejectDialog = null
+    },
+    async handleSubmit(e){
+      this.loader = true
+      let delay = e.target[2].value
+      const file = e.target[0].files
+      const trainingDetails = {
+        trainingName: null,
+        trainingParticipant: [],
+        dateCount: file.length
+      }
+      for (let i = 0; i < file.length; i++) {
+        if (file[i]) {
+          let copyFormat = file[i].name.replace(/ \(\d+\)/g, '')
+          const pattern = /^(.*) - Attendance report (\d{1,2}-\d{1,2}-\d{2})\.csv$/
+          const match = copyFormat.match(pattern)
+          if (match) {
+            if (!trainingDetails.trainingName) trainingDetails.trainingName = match[1]
+          }
+          Papa.parse(file[i], {
+            header: true, // Treat the first row as headers
+            dynamicTyping: true, // Automatically converts data types
+            complete: (results) => {
+              trainingDetails.trainingParticipant.push({
+                date: match[2],
+                participants: results.data
+              })
+            }
+          })
+        }
+      }
+      trainingDetails.trainingParticipant.sort((a, b) => {
+        const dateA = new Date(a.date)
+        const dateB = new Date(b.date)
+        return dateA - dateB
+      })
+      this.csvData = trainingDetails
+      console.log("Team attendance Extracted",this.csvData)
+
+      const nominationfile = e.target[1].files[0]
+      console.log(nominationfile,file)
+      const workbook = new ExcelJS.Workbook()
+      await workbook.xlsx.load(await nominationfile.arrayBuffer())
+
+      const worksheet = workbook.worksheets[0] // Get the first sheet
+      this.headers = worksheet.getRow(1).values.slice(1) // Get headers
+      this.data = []
+      worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
+        if (rowNumber > 1) {
+          // Skip header row
+          this.data.push(row.values.slice(1))
+        }
+      })
+      let filtered = JSON.stringify(
+        this.data
+          .filter((obj) => {
+            return ![null, undefined, ''].includes(obj)
+          })
+          .filter((el) => {
+            return typeof el != 'object' || Object.keys(el).length > 0
+          })
+      )
+      let nominationData = JSON.parse(filtered)
+      let employees = this.extractDataFromNomination(
+        nominationData,
+        this.csvData.trainingParticipant.length
+      )
+      this.nominationList = employees
+      console.log('Nomination', employees)
+      for (const dateEntry of this.csvData.trainingParticipant) {
+        try {
+          const currentDate = dateEntry.date
+          const dateData = await this.extractFromTeamsAttendance(
+            JSON.parse(JSON.stringify(dateEntry.participants))
+          )
+          let filteredData = await this.filterParticipants(dateData,delay)
+          console.log('transformedTeamsAttendance', filteredData)
+          employees.forEach((employee) => {
+            const employeeData = filteredData.find(
+              (data) => Number(data['Participant ID (UPN)']) === employee.NEW_EMP_ID
+            )
+            if (employeeData && employeeData.Role === 'Presenter') {
+              if (!employee.Attendance) {
+                employee.Attendance = {} // Initialize attendance object if not already present
+              }
+              employee.Attendance[currentDate] = 'P'
+              employee.PRESENTCOUNT++
+            } else {
+              if (!employee.Attendance) {
+                employee.Attendance = {} // Initialize attendance object if not already present
+              }
+              employee.Attendance[currentDate] = 'A'
+            }
+          })
+          this.finalAttendance = employees
+          // this.totalAttended = employees.reduce((a,b)=>{
+          //   if((b.PRESENTCOUNT/b.SESSIONCOUNT)*100 >= 50){
+          //     a+=1
+          //   }
+          //   return a
+          // },0)
+        } catch {
+
+        }
+        finally{
+          this.loader = false
+        }
+      }
+      this.attendedEmployee = employees.filter((employee)=>((employee.PRESENTCOUNT/employee.SESSIONCOUNT)*100) >= 50)
+      this.notAttendedEmployee = employees.filter((employee)=>((employee.PRESENTCOUNT/employee.SESSIONCOUNT)*100) <= 49)  
+      console.log("finalAttendance",this.finalAttendance) 
     }
   },
   computed: {
     bestMatch() {
-      const matchFound = this.nominationList.filter((employee) =>
-        employee.NAME.replaceAll(' ', '')
-          .toLowerCase()
-          .includes(this.employeeName.replaceAll(' ', '').toLowerCase())
-      )
-      return matchFound
+      if(this.employeeName){
+        let cleanedEmployeeName = this.employeeName.replaceAll("(Unverified)", "").toLowerCase().trim().split(' ');
+        let filteredList = JSON.parse(JSON.stringify(this.nominationList)).filter((employee) => {
+          if(typeof employee.NAME === 'object' ){
+            let nameParts = employee.NAME.result.toLowerCase().trim().split(' ');
+            return cleanedEmployeeName.some(part => nameParts.includes(part));
+          }            
+          else{
+            let nameParts = employee.NAME.toLowerCase().trim().split(' ');
+            return cleanedEmployeeName.some(part => nameParts.includes(part));
+          }
+        });
+        return filteredList;
+      }      
     },
   }
 }
 </script>
 
 <style scoped>
-.p-error {
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+:deep(thead.p-datatable-thead){
+  white-space: pre !important;
+}
+:deep(.p-datatable-wrapper){
+  overflow: unset !important;
+}
+:deep(.p-datatable-table){ 
+  overflow:auto !important;
+}
+:deep(thead.p-datatable-thead){ 
+  position: sticky;
+  top:0px;
+}
+.attendance-summary-button button{
+   background-color: transparent ;
+   text-decoration: underline ;
+   border: none;
+   text-underline-offset:3px;
+   cursor: pointer;
+   margin: 20px;
+   font-size: 16px;
+   font-weight: 600;
+}
+.summary-card-grp span{
+  display: inline-block;
+  min-width: 120px;
+}
+.summary-card-grp strong{
+  margin-left: 10px;
+  font-weight: bold;
+}
+.error-input-grp{
   color: red;
 }
 .btn-grp {
@@ -551,6 +808,12 @@ export default {
 .attendance-report input[type='file'] {
   background-color: black;
   padding: 15px;
+  border-radius: 5px;
+  color: white;
+}
+.attendance-report select{
+  background-color: black;
+  padding: 15px 10px;
   border-radius: 5px;
   color: white;
 }
@@ -572,4 +835,9 @@ label {
 .grp-data-table h4 {
   text-align: left;
 }
+.card-wrap{
+  display: flex;
+  gap: 20px;
+}
+
 </style>

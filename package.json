@@ -11,6 +11,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "chart.js": "^4.4.3",
     "exceljs": "^4.4.0",
     "moment": "^2.30.1",

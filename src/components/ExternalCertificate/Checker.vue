@@ -1,6 +1,7 @@
 <template>
-  <div class="total-points" v-if="totalAwePoints" style="color: white;font-weight: 600;">Total AWE Points : {{ totalAwePoints }}</div>
-  <div v-if="dataDifference.length > 0" style="color: white;font-weight: 600;" >Data Difference : {{ this.dataDifference.length }}</div>
+  <!-- <div class="total-points" v-if="totalAwePoints" style="color: white;font-weight: 600;">Total AWE Points : {{ totalAwePoints }}</div>
+   -->
+  <div v-if="dataDifference.length > 0" style="color: white;font-weight: 600;" >Data Difference : {{ duplicateFree.length>0?duplicateFree.length:dataDifference.length }}</div>
   <div class="difference-checker">
     <input type="file" @change="handleFileUpload" accept=".xlsx, .xls" />
     <p v-if="loader">Extracting...</p>
@@ -53,15 +54,9 @@ export default {
       const workbook = new ExcelJS.Workbook()
       await workbook.xlsx.load(await file.arrayBuffer())
 
-      const worksheet = workbook.worksheets[0] // Get the first sheet
-      this.headers = worksheet.getRow(1).values.slice(1) // Get headers
+      const worksheet = workbook.worksheets[0]
       this.data = []
-      worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
-        if (rowNumber > 1) {
-          // Skip header row
-          this.data.push(row.values.slice(1))
-        }
-      })
+      worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => this.data.push(row.values.slice(1)))
       let filtered = JSON.stringify(
         this.data
           .filter((obj) => {
@@ -75,12 +70,13 @@ export default {
       let employeeCertificationDetails = []
       let certificationNameIndex;
       let empIdIndex;
+      console.log('Bonus Sheet Header ',parsedData[0])
       certificationNameIndex = parsedData[0].findIndex((header)=>{
           return header.includes("Certification Name")
       })
-          empIdIndex = parsedData.findIndex((header)=>{
+      empIdIndex = parsedData.findIndex((header)=>{
           return header.includes("Emp Id")
-          })
+      })
         
       parsedData.map((data, index) => {
         if (index !== 0) {
@@ -91,15 +87,9 @@ export default {
       console.log('Bonus Sheet', employeeCertificationDetails)
 
       // sheet2
-      const worksheet2 = workbook.worksheets[1] // Get the first sheet
-      worksheet2.getRow(1).values.slice(1) // Get headers
+      const worksheet2 = workbook.worksheets[1] 
       this.data2 = []
-      worksheet2.eachRow({ includeEmpty: true }, (row, rowNumber) => {
-        if (rowNumber > 1) {
-          // Skip header row
-          this.data2.push(row.values.slice(1))
-        }
-      })
+      worksheet2.eachRow({ includeEmpty: true }, (row, rowNumber) => this.data2.push(row.values.slice(1)))
       let filtered2 = JSON.stringify(
         this.data2
           .filter((obj) => {
@@ -111,7 +101,7 @@ export default {
       )
       let parsedData2 = JSON.parse(filtered2)
       let employeeCertificationDetails2 = []
-      console.log('parsedData',parsedData2[0])
+      console.log('LMS Data Header ',parsedData2[0])
       let tsrUnitIndex;
         let tsrLearningPlanIndex;
         let completionDateIndex;
@@ -155,12 +145,11 @@ export default {
             }
           })
       console.log('LMS Data', employeeCertificationDetails2)
-      console.log(this.findDifferences(employeeCertificationDetails,employeeCertificationDetails2))
-     // this.exportToExcel(this.findDifferences(employeeCertificationDetails,employeeCertificationDetails2))
-    this.dataDifference =  this.findDifferences(employeeCertificationDetails,employeeCertificationDetails2)
-    console.log('difference',JSON.parse(JSON.stringify(this.dataDifference)))
+      this.dataDifference =  this.findDifferences(employeeCertificationDetails,employeeCertificationDetails2)
+      console.log('difference',JSON.parse(JSON.stringify(this.dataDifference)))
       }
-      catch{
+      catch(error){
+        console.log(error)
         this.error = true;
       }
       finally{

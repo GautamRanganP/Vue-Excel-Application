@@ -1,21 +1,19 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import AttendanceUpload from './components/AttendanceTMU/AttendanceUpload.vue'
-import SessionCreation from './components/SessionCreationTMU/SessionCreation.vue'
-import AttendanceSheet from './components/AttendanceSheet/AttendanceSheet.vue'
-import CertificateValidation from './components/CertificateValidation/CertificateValidation.vue'
 import EmployeeDetails from './components/EmployeeDetails/EmployeeDetails.vue'
 import CertificationDashboard from './components/CertificateDashboard/CertificateDashboard.vue'
 import AttendanceReport from './components/AttendanceReport/AttendanceReport.vue'
 import Checker from './components/ExternalCertificate/Checker.vue'
+import EmailTest from './components/EmailTest/EmailTest.vue'
 
 const routes = [
-  { path: '/', component: AttendanceUpload },
-  { path: '/sessionCreation', component: SessionCreation },
-  { path: '/certificationValidator', component: CertificateValidation },
+  { path: '/', component: ()=> import('./components/AttendanceTMU/AttendanceUpload.vue')},
+  { path: '/sessionCreation',  component: ()=> import('./components/SessionCreationTMU/SessionCreation.vue') },
+  { path: '/certificationValidator', component: ()=> import('./components/CertificateValidation/CertificateValidation.vue')},
   { path: '/employee', component:EmployeeDetails  },
   { path: '/dashboard', component:CertificationDashboard },
   { path: '/report', component: AttendanceReport },
-  { path: '/checker', component: Checker}
+  { path: '/checker', component: Checker},
+  { pat: './email',component: EmailTest}
 ]
  
 const router = createRouter({

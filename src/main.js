@@ -1,5 +1,4 @@
 import './assets/main.css'
-
 import { createApp } from 'vue'
 import App from './App.vue'
 import PrimeVue from 'primevue/config';
@@ -25,8 +24,6 @@ import Badge from 'primevue/badge';
 import InlineMessage from 'primevue/inlinemessage';
 import Card from 'primevue/card';
 import Dialog from 'primevue/dialog';
-// import PDFTextExtractor from './components/PDFTextExtractor.vue';
-
 
 createApp(App)
 .use(PrimeVue)

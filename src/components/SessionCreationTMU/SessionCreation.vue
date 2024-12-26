@@ -400,7 +400,7 @@ this.employessData = extractedData
             case "Activity Code":     
               return { [header]: this.activityCourseCode };        
             case "Name":    
-              return { [header]: `${this.trainingName} 2024` };        
+              return { [header]: `${this.trainingName}` };        
             case "Activity Label":             
               return { [header]: 'ILT Course' };
             case "Domain Code":
@@ -484,7 +484,7 @@ this.employessData = extractedData
             case "Activity Code":     
               return { [header]: this.activitySessionCode };          
             case "Name":    
-              return { [header]: `${this.trainingName} 2024 ${this.selectedMonth} Class ${this.classNumber}` };        
+              return { [header]: `${this.trainingName} 2025 ${this.selectedMonth} Class ${this.classNumber}` };        
             case "Parent Code":            
               return { [header]: this.activityClassCode };
             case "Parent Start Date":             
@@ -576,7 +576,7 @@ this.employessData = extractedData
         return this.region !== 'Americas' ? 'Hexavarsity India' : 'Hexavarsity Americas'
       },
       activityCourseCode(){
-        return `VILT_${this.region !== 'Americas'?'CMP':'MX'}_${this.trainingName} 2024`
+        return `VILT_${this.region !== 'Americas'?'CMP':'MX'}_${this.trainingName} 2025`
       },
       activityClassCode(){
         return `VILT_${this.region !== 'Americas'?'CMP':'MX'}_${this.selectedMonth}_${this.trainingName}_CLS${this.classNumber}`

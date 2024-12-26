@@ -1,27 +1,23 @@
 <template>
-  <!-- <div class="total-points" v-if="totalAwePoints" style="color: white;font-weight: 600;">Total AWE Points : {{ totalAwePoints }}</div>
-   -->
-  <div v-if="dataDifference.length > 0" style="color: white;font-weight: 600;" >Data Difference : {{ duplicateFree.length>0?duplicateFree.length:dataDifference.length }}</div>
-  <div class="difference-checker">
-    <input type="file" @change="handleFileUpload" accept=".xlsx, .xls" />
-    <p v-if="loader">Extracting...</p>
-    <p v-if="error" style="color: red;" >Error while Extracting</p>
-    <button v-if="dataDifference.length > 0" @click="exportToExcel(JSON.parse(JSON.stringify(duplicateFree.length>0?duplicateFree:dataDifference)))">Export</button>
-    <button v-if="((!dataDifference.length > 0 && duplicateFree.length>0)||(dataDifference.length > 0 && !duplicateFree.length>0) )" @click="removeDuplicate(JSON.parse(JSON.stringify(dataDifference)))">Remove Duplicate</button>
-    
-    <!-- <table v-if="data.length">
-      <thead>
-        <tr>
-          <th v-for="(header, index) in headers" :key="index">{{ header }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(row, rowIndex) in data" :key="rowIndex">
-          <td v-for="(cell, cellIndex) in row" :key="cellIndex">{{ cell }}</td>
-        </tr>
-      </tbody>
-    </table> -->
+<div style="display: flex;" class="">
+  <div style="display: flex;flex-direction: column;align-items: center;flex:1;gap:20px;margin: 20px;">
+    <h3 class="" style="font-weight: 600;color: white;white-space: pre;">Bonus Estimator with data difference</h3>
+    <div class="total-points" v-if="dataDifference.length > 0" style="color: white;font-weight: 600;">Total Estimated AWE Points : {{ duplicateFree.length > 0 ? calculateAwePoints(duplicateFree):calculateAwePoints(dataDifference) }}</div>
+    <div v-if="dataDifference.length > 0" style="color: white;font-weight: 600;" >Data Difference : {{ duplicateFree.length>0?duplicateFree.length:dataDifference.length }}</div>
+    <div class="difference-checker">
+      <input type="file" @change="handleFileUpload" accept=".xlsx, .xls" />
+      <p v-if="loader">Extracting...</p>
+      <p v-if="error" style="color: red;" >Error while Extracting</p>
+      <button v-if="dataDifference.length > 0" @click="exportToExcel(JSON.parse(JSON.stringify(duplicateFree.length>0?duplicateFree:dataDifference)))">Export</button>
+      </div>
   </div>
+  <div style="flex: 2;">
+    <DataTable v-if="dataDifference.length > 0" :value="resultUniqueCertification(dataDifference).splice(0,9)">
+        <Column field="certificationName" header="Certification Name"></Column>
+        <Column field="count" header="Certification Count"></Column>
+    </DataTable>
+  </div>
+</div> 
 </template>
 
 <script>
@@ -41,6 +37,23 @@ export default {
     }
   },
   methods: {
+    calculateAwePoints(data){
+      if(data.length > 0){
+      let totalAwePoints = 0
+      data.forEach((employee)=>{
+        if(employee.Horizon === 'H1')
+          totalAwePoints += 3000
+        else if(employee.Horizon === 'H2')
+          totalAwePoints += 8000
+        else if(employee.Horizon === 'H3')
+          totalAwePoints += 10000
+        else
+          totalAwePoints += 12000
+        })
+        return totalAwePoints
+      }
+      return 0
+    },
     async handleFileUpload(event) {
       this.error = false
       this.duplicateFree = []
@@ -144,8 +157,21 @@ export default {
               employeeCertificationDetails2.push(employee)
             }
           })
+
+      console.log("Sort employee id",employeeCertificationDetails2.sort((a, b) => a.employeeId - b.employeeId))
       console.log('LMS Data', employeeCertificationDetails2)
-      this.dataDifference =  this.findDifferences(employeeCertificationDetails,employeeCertificationDetails2)
+      let lmsDataRemovedDuplicates = this.removeDuplicate(employeeCertificationDetails2.sort((a, b) => {
+      if (a.employeeId !== b.employeeId) {
+        return a.employeeId - b.employeeId;
+      }
+      return new Date(a.completionDate) - new Date(b.completionDate);
+      }))
+        
+  
+         
+      console.log(lmsDataRemovedDuplicates)
+      this.dataDifference =  this.findDifferences(employeeCertificationDetails.sort((a, b) => a.employeeId - b.employeeId),lmsDataRemovedDuplicates)
+      this.resultUniqueCertification(this.dataDifference)
       console.log('difference',JSON.parse(JSON.stringify(this.dataDifference)))
       }
       catch(error){
@@ -165,18 +191,27 @@ export default {
         }
         map1.get(item.employeeId).add(item.certificationName)
       })
-
+      // console.log("map1",map1.get(1000016988),[...map1.get(1000016988)].length)
       const differences = []
 
       // Check array2 against map1
+      let addedCertificationCount = 1
+      let updatedCertificationCount = 1
+      let addedEmployee ,updatedEmployee ;
       arr2.forEach((item) => {
+        addedEmployee !== item.employeeId ? addedCertificationCount = 1 : addedCertificationCount
+        updatedEmployee !== item.employeeId ? updatedCertificationCount = 1 : updatedCertificationCount
         if (!map1.has(item.employeeId)) {
           // If employeeId doesn't exist in array1, it's a new entry
-          differences.push({ status: 'Added', ...item })
+          //  status: 'Added'
+          differences.push({
+           ...item ,certificationCount : addedCertificationCount })
+          addedCertificationCount++
+          addedEmployee = item.employeeId
         } else if (!map1.get(item.employeeId).has(item.certificationName)) {
           // If employeeId exists but certification is different
           differences.push({
-            status: 'Updated',
+            // status: 'Updated',
             employeeId: item.employeeId,
             employeeName: item.employeeName,
             employeeOwningUnit: item.employeeOwningUnit,
@@ -185,9 +220,13 @@ export default {
             tsrLearningPlan: item.tsrLearningPlan,
             completionDate: item.completionDate,
             tsrUnit:item.tsrUnit,
-            Horizon:item.Horizon
+            Horizon:item.Horizon,
+            certificationCount :[...map1.get(item.employeeId)].length + updatedCertificationCount 
           })
+          updatedCertificationCount++
+          updatedEmployee = item.employeeId
         }
+      
       })
       return differences
     },
@@ -195,22 +234,24 @@ export default {
       // let result = []
       // const header = ['EmployeeID','Employee Name','Employee Owning Unit','External Certification Category','TSR Learning Plan Name','TSR UNIT','External Certification','Completion Date','Horizon','AWE points','Status']
     
-      const header = ['EmployeeID','Employee Name','Employee Owning Unit','External Certification Category','TSR Learning Plan Name','TSR UNIT','External Certification','External Certification Completion Date','Horizon','Status']
+      const headerColumns = [
+        { header:"EmployeeID", key:"empId" },
+        { header:"Employee Name", key:"empName" },
+        { header:"Employee Owning Unit", key:"empOwnUnit" },
+        { header:"External Certification Category", key:"externalCertificateCategory" },
+        { header:"TSR Learning Plan Name", key:"tsrLearningPlan" },
+        { header:"TSR UNIT", key:"tsrUnit"},
+        { header:"External Certification", key:"externalCertification"},
+        { header:"External Certification Completion Date", key:"externalCertificationCompletionDate"},
+        { header:"Horizon", key:"horizon"},
+        // { header:"Status", key:"status"},
+        { header:"Total Completed certification", key:"certificationCompletedCount"},
+        { header:'Learning Bonus eligiblity status', key:"learningBonus"}]
 
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('Difference')       
-      worksheet.addRow(header);   
-      worksheet.getRow(1).eachCell((cell)=>{
-        cell.fill = {
-              type: 'pattern',
-              pattern:'solid',
-              fgColor: { argb: 'ADD8E6' } 
-            }
-      })
-      // worksheet.getColumn(1).eachCell((cell)=>{
-      //   cell.alignment = { horizontal: 'left', vertical: 'middle' };
-      // })
-    //  worksheet.getRow(1).fill = 'blue'
+      worksheet.columns = headerColumns;   
+
       worksheet.getColumn(1).width = 15
       worksheet.getColumn(2).width = 15
       worksheet.getColumn(8).width = 20
@@ -220,17 +261,14 @@ export default {
       worksheet.getColumn(5).width = 25
       worksheet.getColumn(6).width = 15
       worksheet.getColumn(7).width = 30
-      // worksheet.getColumn(3).eachCell((cell,rowNumber)=>{
-      //   console.log(row)
-      //   if(rowNumber !== 1){
-      //     cell.alignment = alignment = { horizontal: 'center', vertical: 'middle' }
-      //   }
-      // })  
+      worksheet.getColumn(12).width = 30
       worksheet.getColumn(1).alignment = { horizontal: 'left', vertical: 'middle' }
+      
       employeeArr.forEach(employee => {
         const momentDate = moment(employee.completionDate.toString());
         momentDate.seconds(0);     
         const formattedDate = momentDate.format("DD-MMM-YYYY");
+        const parsedDate = moment.utc(formattedDate).toDate();
         let points = 0; 
         if(employee.Horizon === 'H1')
           points = 3000
@@ -242,10 +280,56 @@ export default {
           points = 12000
 
         this.totalAwePoints += points   
-        worksheet.addRow([employee.employeeId,employee.employeeName,employee.employeeOwningUnit,employee.externalCertificationCategory,employee.tsrLearningPlan,employee.tsrUnit,employee.certificationName,formattedDate,employee.Horizon,employee.status])
-        // worksheet.addRow([employee.employeeId,employee.certificationName,employee.status])
+        worksheet.addRow([employee.employeeId,employee.employeeName,employee.employeeOwningUnit,employee.externalCertificationCategory,employee.tsrLearningPlan,employee.tsrUnit,employee.certificationName,parsedDate,employee.Horizon,employee.certificationCount,employee.certificationCount <= 6 ? "less than or equal to 6 certification ":"Exceeds 6 certification"])
+      
+      
+      })
+      const headerRow = worksheet.getRow(1)
+      headerRow.eachCell((cell, colNumber) => {
+        cell.border = {
+          top: { style: 'thin', color: { argb: '000000' } },
+          left: { style: 'thin', color: { argb: '000000' } },
+          bottom: { style: 'thin', color: { argb: '000000' } },
+          right: { style: 'thin', color: { argb: '000000' } }
+        }
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'B7D1F1' }
+        }
+      })
+      const dataRows = worksheet.getRows(2, employeeArr.length)
+      dataRows.forEach((row) => {
+        row.eachCell((cell, colNumber) => {
+          cell.border = {
+            top: { style: 'thin', color: { argb: '000000' } },
+            left: { style: 'thin', color: { argb: '000000' } },
+            bottom: { style: 'thin', color: { argb: '000000' } },
+            right: { style: 'thin', color: { argb: '000000' } }
+          }
+        })
+      })
+      worksheet.getColumn('certificationCompletedCount').eachCell((cell, rowNumber) => {
+        if (rowNumber !== 1) {
+          cell.alignment = { horizontal: 'center', vertical: 'middle' }
+        }
       })
 
+      worksheet.getColumn('tsrUnit').eachCell((cell, rowNumber) => {
+        if (rowNumber !== 1) {
+          cell.alignment = { horizontal: 'center', vertical: 'middle' }
+        }
+      })
+      worksheet.getColumn('externalCertificationCompletionDate').eachCell((cell, rowNumber) => {
+        if (rowNumber !== 1) {
+          cell.alignment = { horizontal: 'center', vertical: 'middle' }
+        }
+      })
+      worksheet.getColumn('horizon').eachCell((cell, rowNumber) => {
+        if (rowNumber !== 1) {
+          cell.alignment = { horizontal: 'center', vertical: 'middle' }
+        }
+      })
       const blob = await workbook.xlsx.writeBuffer();
         // Create a blob URL     
         const blobUrl = window.URL.createObjectURL(new Blob([blob], { type: 'application/octet-stream' }));       // Create a download link      
@@ -254,19 +338,31 @@ export default {
         downloadLink.setAttribute('download', 'difference.xlsx');       // Simulate a click event on the download link     
         downloadLink.click();       // Clean up by revoking the blob URL       
         window.URL.revokeObjectURL(blobUrl);
-      
+    },
+    resultUniqueCertification(arr){
+      const map3 = new Map();
+      arr.forEach((item) => {
+      if (!map3.has(item.certificationName)) {
+        map3.set(item.certificationName, new Set());
+        } 
+        map3.get(item.certificationName).add(item);
+      })
+      let resultArr = [] 
+      map3.forEach((key, value)=>{
+          resultArr.push({certificationName: [...key][0].certificationName,count:[...key].length},)
+      })
+      return resultArr.sort((a, b) => b.count - a.count);
     },
     removeDuplicate(data){
       const uniqueCertifications = data.reduce((acc, entry) => {
-    const key = `${entry.employeeId}-${entry.certificationName}`; // Unique key for combination of employeeId and certificationName
-    if (!acc.some(e => e.key === key)) {
-        acc.push({ ...entry, key }); // Add unique entry with a key to avoid duplicates
-    }
-    return acc;
-}, []).map(({ key, ...rest }) => rest); // Remove the key before returning the result
- this.duplicateFree = uniqueCertifications
-console.log(uniqueCertifications);
-    }
+      const key = `${entry.employeeId}-${entry.certificationName}`;
+        if (!acc.some(e => e.key === key)) {
+          acc.push({ ...entry, key });
+        }
+        return acc;
+      }, []).map(({ key, ...rest }) => rest);
+      return uniqueCertifications
+    },
   }
 }
 </script>
@@ -287,6 +383,8 @@ console.log(uniqueCertifications);
   text-align: center;
 }
 .difference-checker button{
+  background-color: white;
+  border-radius: 5px;
   padding: 6px;
   border: none;
   color: black;

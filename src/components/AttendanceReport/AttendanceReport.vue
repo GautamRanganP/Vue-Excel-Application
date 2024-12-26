@@ -138,6 +138,7 @@ export default {
     return {
       csvData: [],
       finalAttendance: [],
+      finalAttendanceNotInNomination: [],
       employeeSuggestion:[],
       nominationList: [],
       attendedEmployee:[],
@@ -189,6 +190,10 @@ export default {
     },
     async extractFromTeamsAttendance(dataArray) {
       const participants = []
+      // const participants = {
+      //   nominationParticipants : [],
+      //   nonNominationParticipants : []
+      // }
       console.log("rawAttendance",dataArray)
       let isParticipantSection = false
       for (const item of dataArray) {
@@ -236,6 +241,7 @@ export default {
                     }
                   }
                   participants.push(participant)
+
                 })
                 .catch((error) => {
                   this.error =true
@@ -439,6 +445,7 @@ export default {
         const dateString = date.date
         const parsedDate = moment.utc(dateString).startOf('day').toDate()
         headers.push({ header: parsedDate, key: `date${index + 1}` })
+        headers.push({ header: "Duration", key: `duration${index + 1}` })
       })
       headers.push(
         { header: 'No_of_Sessions', key: 'session' },
@@ -455,9 +462,9 @@ export default {
       }
       finalAttendance.forEach((employee) => {
         const row = [employee.NEW_EMP_ID, employee.NAME]
-
         data.forEach((date) => {
           row.push(employee.Attendance[date.date])
+          row.push(employee.Duration[date.date])
         })
         row.push(
           employee.SESSIONCOUNT,
@@ -469,7 +476,6 @@ export default {
 
       for (let i = 0; i < data.length; i++) {
         worksheet.getColumn(`date${i + 1}`).eachCell((cell, rowNumber) => {
-          if (rowNumber !== 1) {
             if (cell.value === 'A') {
               cell.fill = {
                 type: 'pattern',
@@ -478,7 +484,6 @@ export default {
               }
             }
             cell.alignment = { horizontal: 'center', vertical: 'middle' }
-          }
         })
       }
 
@@ -655,6 +660,7 @@ export default {
         const dateB = new Date(b.date)
         return dateA - dateB
       })
+      console.log("before sort",trainingDetails)
       this.csvData = trainingDetails
       console.log("Team attendance Extracted",this.csvData)
 
@@ -696,32 +702,79 @@ export default {
           )
           let filteredData = await this.filterParticipants(dateData,delay)
           console.log('transformedTeamsAttendance', filteredData)
-          employees.forEach((employee) => {
+          let notInNominationArr  = employees.map((employee)=> employee.NEW_EMP_ID) 
+          let notInNomination =  filteredData.filter((employee) => 
+            notInNominationArr.indexOf(Number(employee['Participant ID (UPN)'])) === -1);
+          let transformNomination =  []
+          notInNomination.map((employee)=>{
+            transformNomination.push({
+              'NEW_EMP_ID':Number(employee['Participant ID (UPN)']),
+              'NAME': employee.Name
+            })
+          })
+
+          transformNomination.forEach((employee) => {
             const employeeData = filteredData.find(
               (data) => Number(data['Participant ID (UPN)']) === employee.NEW_EMP_ID
             )
+            const employeeData1 = dateData.find(
+              (data) => Number(data['Participant ID (UPN)']) === employee.NEW_EMP_ID
+            )
             if (employeeData && employeeData.Role === 'Presenter') {
+              if (!employee.PRESENTCOUNT) {
+                employee.SESSIONCOUNT = this.csvData.trainingParticipant.length
+                employee.PRESENTCOUNT = 0
+              }
               if (!employee.Attendance) {
+                employee.Duration = {}
                 employee.Attendance = {} // Initialize attendance object if not already present
               }
+              console.log('Attendance current',currentDate)
+              employee.Duration[currentDate] = employeeData && employeeData['In-Meeting Duration'] !== undefined ? employeeData['In-Meeting Duration'] : "0s"
               employee.Attendance[currentDate] = 'P'
               employee.PRESENTCOUNT++
             } else {
               if (!employee.Attendance) {
                 employee.Attendance = {} // Initialize attendance object if not already present
+                employee.Duration = {}
               }
+              employee.Duration[currentDate] = employeeData1 && employeeData1['In-Meeting Duration'] !== undefined ? employeeData1['In-Meeting Duration'] : "0s"
               employee.Attendance[currentDate] = 'A'
             }
           })
-          this.finalAttendance = employees
-          // this.totalAttended = employees.reduce((a,b)=>{
-          //   if((b.PRESENTCOUNT/b.SESSIONCOUNT)*100 >= 50){
-          //     a+=1
-          //   }
-          //   return a
-          // },0)
-        } catch {
+          console.log('Attendance current',transformNomination)
+          employees.forEach((employee) => {
+            const employeeData = filteredData.find(
+              (data) => Number(data['Participant ID (UPN)']) === employee.NEW_EMP_ID
+            )
+            const employeeData1 = dateData.find(
+              (data) => Number(data['Participant ID (UPN)']) === employee.NEW_EMP_ID
+            )
 
+            if (employeeData && employeeData.Role === 'Presenter') {
+              if (!employee.Attendance) {
+                employee.Duration = {}
+                employee.Attendance = {}
+              }
+              employee.Duration[currentDate] = employeeData && employeeData['In-Meeting Duration'] !== undefined ? employeeData['In-Meeting Duration'] : "0s"
+              employee.Attendance[currentDate] = 'P'
+              employee.PRESENTCOUNT++
+            } else {
+              if (!employee.Attendance) {
+                employee.Attendance = {}
+                employee.Duration = {}
+              }
+
+              employee.Duration[currentDate] = employeeData1 && employeeData1['In-Meeting Duration'] !== undefined ? employeeData1['In-Meeting Duration'] : "0s"
+              employee.Attendance[currentDate] = 'A'
+            }
+          })
+          console.log('Attendance employee',employees)
+          this.finalAttendanceNotInNomination = transformNomination
+          this.finalAttendance = employees
+          console.log("final",employees)
+        } catch(err) {
+          console.log(err)
         }
         finally{
           this.loader = false
@@ -730,6 +783,7 @@ export default {
       this.attendedEmployee = employees.filter((employee)=>((employee.PRESENTCOUNT/employee.SESSIONCOUNT)*100) >= 50)
       this.notAttendedEmployee = employees.filter((employee)=>((employee.PRESENTCOUNT/employee.SESSIONCOUNT)*100) <= 49)  
       console.log("finalAttendance",this.finalAttendance) 
+      console.log('final nomination',this.finalAttendanceNotInNomination)
     }
   },
   computed: {

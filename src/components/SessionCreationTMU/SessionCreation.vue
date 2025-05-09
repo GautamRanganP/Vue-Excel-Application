@@ -132,7 +132,7 @@
                  <InputText type="text" v-model="trainerEmpId" />
               </div> -->
               <div class="row" v-if='trainerType === "Internal"'>
-                <label>Trainer Name</label>
+                <label>Trainer Id</label>
                 <AutoComplete v-model="selectedEmpId" multiple optionLabel="NEW_EMP_ID" :suggestions="filteredEmpId" @complete="searchEmployeeId" />
 
                 <!-- <AutoComplete v-model="selectedEmpName" multiple optionLabel="NAME" :suggestions="filteredName" @complete="searchEmployeeName" />

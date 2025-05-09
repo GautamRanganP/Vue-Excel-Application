@@ -39,17 +39,58 @@
                   <label for="description4" class="ml-2">Process</label>
                 </div>
               </div>
-                <div class="row">
-                  <label>Training Month</label>
+
+
+              <!-- <div class="row">
+                <label>Training Type</label>
+                  <div style="display: flex;align-items: center;gap: 5px;">
+                    <RadioButton v-model="trainingType" inputId="ingredient2" name="DemandBased" value="DemandBased" />
+                    <label for="ingredient2" class="ml-2">D</label>
+                  </div>
+                  <div style="display: flex;align-items: center;gap: 5px;">
+                    <RadioButton v-model="trainingType" inputId="ingredient1" name="Competency" value="Competency" />
+                    <label for="ingredient1" style="margin-right: 10px;">Competency</label>
+                  </div>
+              </div>
+               -->
+
+              <div class="row">
+                <label>Training Month</label>
                   <Dropdown v-model="selectedMonth" :options="months" placeholder="Select a Month" class="w-full md:w-14rem" />
                 </div>
-                <div class="row" v-if="this.region === 'India'">
+              <div class="row">
+                <label>Training Type</label>
+                  <div style="display: flex;align-items: center;gap: 5px;">
+                    <RadioButton v-model="trainingType" inputId="DemandBased" name="DemandBased" value="DemandBased" />
+                    <label for="DemandBased" class="ml-2" style="margin-right: 10px;">Demand Based</label>
+                  </div>
+                  <div style="display: flex;align-items: center;gap: 5px;">
+                    <RadioButton v-model="trainingType" inputId="Competency" name="Competency" value="Competency" />
+                    <label for="Competency" >Competency</label>
+                  </div>
+              </div>
+              
+
+              <div class="row">
+                <label>Mode</label>
+                  <div style="display: flex;align-items: center;gap: 5px;">
+                    <RadioButton v-model="modeofTraining" inputId="Virtual" name="Virtual" value="Virtual" />
+                    <label for="Virtual" class="ml-2" style="margin-right: 10px;">Virtual</label>
+                  </div>
+                  <div style="display: flex;align-items: center;gap: 5px;">
+                    <RadioButton v-model="modeofTraining" inputId="InPerson" name="InPerson" value="InPerson" />
+                    <label for="InPerson">InPerson</label>
+                  </div>
+              </div>
+              
+
+                <div class="row" v-if="this.region === 'India'&& this.trainingType === 'Competency'">
                   <label>Competency Dev</label>
                   <Dropdown v-model="selectedCompetency" :options="competencyDev" placeholder="Select a Competency" class="w-full md:w-14rem" />
                 </div>
               </div>
               <div class="row">
-                <label>India Or Americas</label>
+                <label>Location</label>
                 <div style="display: flex;align-items: center;gap: 5px;">
                   <RadioButton v-model="region" inputId="ingredient1" name="pizza" value="India" />
                   <label for="ingredient1" style="margin-right: 10px;">India</label>
@@ -75,25 +116,27 @@
                 </div>
 
                 <div class="row">
-                <label>Training Type</label>
+                <label>Trainer Type</label>
                 <div style="display: flex;align-items: center;gap: 5px;">
-                  <RadioButton v-model="trainerType" inputId="ingredient1" name="pizza" value="Internal" />
-                  <label for="ingredient1" style="margin-right: 10px;">Internal</label>
+                  <RadioButton v-model="trainerType" inputId="Internal" name="Internal" value="Internal" />
+                  <label for="Internal" style="margin-right: 10px;">Internal</label>
                 </div>
                 <div style="display: flex;align-items: center;gap: 5px;">
-                  <RadioButton v-model="trainerType" inputId="ingredient2" name="pizza" value="External" />
-                  <label for="ingredient2" class="ml-2">External</label>
+                  <RadioButton v-model="trainerType" inputId="External" name="External" value="External" />
+                  <label for="External"  class="ml-2">External</label>
                 </div>
               </div>
               <!-- <div class="row">
                 <label>Trainer ID</label>
-                <AutoComplete v-model="selectedEmpId" multiple optionLabel="NEW_EMP_ID" :suggestions="filteredEmpId" @complete="searchEmployeeId" />
-
+             
                  <InputText type="text" v-model="trainerEmpId" />
               </div> -->
               <div class="row" v-if='trainerType === "Internal"'>
                 <label>Trainer Name</label>
-                <AutoComplete v-model="selectedEmpName" multiple optionLabel="NAME" :suggestions="filteredName" @complete="searchEmployeeName" />
+                <AutoComplete v-model="selectedEmpId" multiple optionLabel="NEW_EMP_ID" :suggestions="filteredEmpId" @complete="searchEmployeeId" />
+
+                <!-- <AutoComplete v-model="selectedEmpName" multiple optionLabel="NAME" :suggestions="filteredName" @complete="searchEmployeeName" />
+                 -->
                 <!-- <InputText type="text" v-model="trainerEmpId" /> -->
               </div>
               <!-- <div class="row">
@@ -108,7 +151,8 @@
                   <!-- <p>VILT_{{region !== 'Americas'?'CMP':'MX'}}_{{selectedMonth}}_{{Training Name}}_SN{{ classNumber }}</p>
         -->
                   <InputGroup>
-                    <InputGroupAddon>VILT_{{region !== 'Americas'?'CMP':'MX'}}_</InputGroupAddon>
+                    <InputGroupAddon>
+                      {{modeofTraining==="InPerson" ? "ILT" :"VILT"}}_{{region !== 'Americas'? trainingType=== "Competency" ?'CMP': 'AR' :'MX'}}_</InputGroupAddon>
                     <InputText placeholder="Month" v-model="selectedMonth" disabled />
                     <InputText placeholder="Training Name" v-model="trainingName" disabled />
                     <InputGroupAddon>_SN{{ classNumber }}</InputGroupAddon>
@@ -119,7 +163,8 @@
           <div class="row">
                   <label>Class Code</label>
                   <InputGroup>
-                    <InputGroupAddon >VILT_{{region !== 'Americas'?'CMP':'MX'}}_</InputGroupAddon>
+                    <InputGroupAddon>
+                      {{modeofTraining==="InPerson" ? "ILT" :"VILT"}}_{{region !== 'Americas'? trainingType=== "Competency" ?'CMP': 'AR' :'MX'}}_</InputGroupAddon>
                     <InputText placeholder="Month" v-model="selectedMonth" disabled />
                     <InputText placeholder="Training name" v-model="trainingName" disabled />
                     <InputGroupAddon>_CLS{{ classNumber }}</InputGroupAddon>
@@ -152,6 +197,8 @@
   export default {
     data() {
       return {
+        modeofTraining:"InPerson",
+        trainingType:"DemandBased",
         trainingImportData:null,
         trainerType:"Internal",
         selectedEmpName:null,
@@ -313,7 +360,17 @@
       };
     },
     watch: {
-  
+      trainingName(newVal){
+        const trimmed = newVal.trim()
+        console.log(newVal)
+        if (newVal !== trimmed) {
+          this.trainingName = trimmed // update only if there was whitespace
+        }
+      },
+      trainerType(newValue,oldValue){
+        if(newValue === 'External')
+          this.selectedEmpName = null
+      }
     },
     created(){
       this.columns = [
@@ -338,20 +395,20 @@
                 }
             }, 250);
       },
-      searchEmployeeName(event) {
-            setTimeout(() => {
-                if (!event.query.trim().length) {
-                    // this.filteredEmpId = [...this.employessData.NEW_EMP_ID];
-                } else {
-                  const nonReactiveData = Object.assign([], this.employessData); // Create a non-reactive copy of the data
-                  const filterResults = nonReactiveData.filter((country) => {
-                  return country.NAME.toString().toLowerCase().startsWith(event.query.toLowerCase());
-                  }).slice(0, 10)
-                  this.filteredName= filterResults;
-                  console.log("empid",JSON.parse(JSON.stringify(this.filteredName)))
-                }
-            }, 250);
-      },
+      // searchEmployeeName(event) {
+      //       setTimeout(() => {
+      //           if (!event.query.trim().length) {
+      //               // this.filteredEmpId = [...this.employessData.NEW_EMP_ID];
+      //           } else {
+      //             const nonReactiveData = Object.assign([], this.employessData); // Create a non-reactive copy of the data
+      //             const filterResults = nonReactiveData.filter((country) => {
+      //             return country.NAME.toString().toLowerCase().startsWith(event.query.toLowerCase());
+      //             }).slice(0, 10)
+      //             this.filteredName= filterResults;
+      //             console.log("empid",JSON.parse(JSON.stringify(this.filteredName)))
+      //           }
+      //       }, 250);
+      // },
       onUpload() {
             this.$toast.add({ severity: 'info', summary: 'Success', detail: 'File Uploaded', life: 3000 });
       },
@@ -442,7 +499,7 @@ this.employessData = extractedData
             case "End Date": 
               return { [header]: this.formattedEndDate };  
               case "Delivery Method": 
-              return { [header]: "Virtual" };  
+              return { [header]: this.modeofTraining === "InPerson" ? "Live - Instructor Led": "Virtual"  };  
             case "Active Indicator": 
               return { [header]: 1 };  
               case "Open Indicator": 
@@ -474,7 +531,7 @@ this.employessData = extractedData
               case "Keywords": 
               return { [header]: 'NA' }
               case "Instructor": 
-              return { [header]: this.selectedEmpName && this.selectedEmpName.length > 0 ? this.selectedEmpName[0]['EMP ID'] : ''}; 
+              return { [header]: this.selectedEmpId && this.selectedEmpId.length > 0 ? this.selectedEmpId[0]['EMP ID'] : ''}; 
             default:
               return { [header]: '' };
           }
@@ -520,7 +577,7 @@ this.employessData = extractedData
               case "Contribute to parent activity": 
               return { [header]: 1 } 
               case "Instructor": 
-              return { [header]: this.selectedEmpName && this.selectedEmpName.length > 0 ? this.selectedEmpName[0]['EMP ID'] : '' }; 
+              return { [header]: this.selectedEmpId && this.selectedEmpId.length > 0 ? this.selectedEmpId[0]['EMP ID'] : '' }; 
               default: 
               return { [header]: '' };
           } 
@@ -557,7 +614,10 @@ this.employessData = extractedData
     computed: {
       formattedTrainingDescription(){
         if(this.region === 'India'){
-          return `${this.trainingDescrition};Competency Dev;Unit Specific;${this.selectedCompetency}`
+          if(this.trainingType ==='Competency')
+               return `${this.trainingDescrition};Competency Dev;Unit Specific;${this.selectedCompetency}`
+          else
+              return `${this.trainingDescrition};Demand Based;ARVILT;Open`
         }
         else{
           if(this.trainingDescrition === 'Process'){
@@ -576,13 +636,13 @@ this.employessData = extractedData
         return this.region !== 'Americas' ? 'Hexavarsity India' : 'Hexavarsity Americas'
       },
       activityCourseCode(){
-        return `VILT_${this.region !== 'Americas'?'CMP':'MX'}_${this.trainingName} 2025`
+        return `${this.modeofTraining==="InPerson" ? "ILT" :"VILT"}_${this.region !== 'Americas'? this.trainingType=== "Competency" ?'CMP': 'AR' :'MX'}_${this.trainingName} 2025`
       },
       activityClassCode(){
-        return `VILT_${this.region !== 'Americas'?'CMP':'MX'}_${this.selectedMonth}_${this.trainingName}_CLS${this.classNumber}`
+        return `${this.modeofTraining==="InPerson" ? "ILT" :"VILT"}_${this.region !== 'Americas'? this.trainingType=== "Competency" ?'CMP': 'AR' :'MX'}_${this.selectedMonth}_${this.trainingName}_CLS${this.classNumber}`
       },
       activitySessionCode(){
-        return `VILT_${this.region !== 'Americas'?'CMP':'MX'}_${this.selectedMonth}_${this.trainingName}_SN${this.classNumber}`
+        return `${this.modeofTraining==="InPerson" ? "ILT" :"VILT"}_${this.region !== 'Americas'? this.trainingType=== "Competency" ?'CMP': 'AR' :'MX'}_${this.selectedMonth}_${this.trainingName}_SN${this.classNumber}`
       },
       formattedStartDate(){
         if(this.startDate !== null){

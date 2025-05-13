@@ -22,7 +22,6 @@ export default {
   computed: {
     
   },
-  // Other options like 'created', 'mounted', etc. can be defined here
 };
 </script>
 <style>
